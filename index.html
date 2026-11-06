@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Aprendizaje Territorial Eco-Juegos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#0b2a33',
+                            accent: '#0b7285'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b2a33;
+            color: #e6f4f4;
+            font-family: 'Inter', sans-serif;
+        }
+        .card-glass {
+            background: rgba(14, 53, 64, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(188, 215, 217, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(11, 42, 51, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #0b7285;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-accent selection:text-white">
+
+    <!-- Header / Navbar Principal -->
+    <header class="sticky top-0 z-30 bg-brand-900/90 backdrop-blur-md border-b border-cyan-800/40 px-4 py-3 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🌿</span>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-cyan-300">EcoSistemas Vivos</h1>
+                    <p class="text-xs text-cyan-200/70">Plataforma Integrada de Aprendizaje Territorial</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Estadísticas Rápidas -->
+            <div class="flex items-center gap-4 bg-cyan-950/70 px-4 py-2 rounded-2xl border border-cyan-700/50 text-sm">
+                <div class="text-center sm:text-left">
+                    <span class="block text-xs text-cyan-400 font-semibold uppercase tracking-wider">Puntaje Total PBR</span>
+                    <span id="total-score" class="text-xl font-extrabold text-amber-400">0 / 400</span>
+                </div>
+                <div class="h-8 w-px bg-cyan-800"></div>
+                <div class="text-center sm:text-left">
+                    <span class="block text-xs text-cyan-400 font-semibold uppercase tracking-wider">Progreso Global</span>
+                    <span id="progress-text" class="text-sm font-bold text-white">0 de 4 Completados (0%)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal Dynamic Views -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- VISTA 1: MENÚ PRINCIPAL (TARJETAS DE NIVELES) -->
+        <section id="view-hub" class="space-y-8">
+            <!-- Presentación & Barra de Progreso -->
+            <div class="card-glass p-6 sm:p-8 rounded-3xl shadow-2xl">
+                <div class="max-w-3xl">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">¡Bienvenido, Explorador del Territorio!</h2>
+                    <p class="text-cyan-100/80 leading-relaxed text-sm sm:text-base">
+                        Completa los 4 retos interactivos de gestión territorial e impacto socio-ambiental. En cada nivel tomarás decisiones estratégicas y acumularás **Puntos de Balance Regional (PBR)**. Al finalizar los 4 juegos, se desbloqueará la Evaluación Integrada Final.
+                    </p>
+                </div>
+                
+                <!-- Barra de Progreso Visual -->
+                <div class="mt-6">
+                    <div class="flex justify-between text-xs font-semibold text-cyan-300 mb-2">
+                        <span>Progreso de la RUTA ECO-TERRITORIAL</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="w-full h-3 bg-cyan-950 rounded-full overflow-hidden border border-cyan-800/60">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 transition-all duration-700 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Tarjetas de Juegos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="games-grid">
+                <!-- Se llena dinámicamente mediante JS -->
+            </div>
+
+            <!-- Banner de Evaluación Integrada (Bloqueado/Desbloqueado) -->
+            <div id="quiz-banner" class="card-glass p-6 sm:p-8 rounded-3xl border-2 border-dashed border-cyan-700/50 transition-all duration-300">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4 text-center md:text-left">
+                        <div id="quiz-icon-bg" class="w-16 h-16 rounded-2xl bg-cyan-950/80 flex items-center justify-center text-3xl border border-cyan-800">
+                            🔒
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Evaluación Integrada de Aprendizaje</h3>
+                            <p id="quiz-status-desc" class="text-xs sm:text-sm text-cyan-200/70 mt-1">
+                                Debes completar los 4 niveles de aprendizaje para activar esta prueba de conocimiento y síntesis reflexiva.
+                            </p>
+                        </div>
+                    </div>
+                    <button id="btn-open-quiz" disabled class="w-full md:w-auto px-8 py-4 rounded-xl font-bold text-base transition-all shadow-lg opacity-50 cursor-not-allowed bg-slate-700 text-slate-400">
+                        Evaluación Bloqueada
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: CONTENEDOR DEL JUEGO (IFRAME FULLSCREEN) -->
+        <section id="view-game" class="hidden flex-col h-[calc(100vh-140px)]">
+            <div class="flex items-center justify-between bg-cyan-950/90 border border-cyan-800 px-4 py-2.5 rounded-t-2xl">
+                <div class="flex items-center gap-3">
+                    <span id="active-game-emoji" class="text-2xl">🎮</span>
+                    <h3 id="active-game-title" class="font-bold text-white text-base sm:text-lg">Nombre del Juego</h3>
+                </div>
+                <button onclick="closeGameView()" class="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md">
+                    <span>✕</span> Salir / Volver al Menú
+                </button>
+            </div>
+            <div class="flex-grow relative bg-black/40 rounded-b-2xl overflow-hidden border border-t-0 border-cyan-800">
+                <iframe id="game-iframe" class="w-full h-full border-0" title="Juego Activo"></iframe>
+            </div>
+        </section>
+
+        <!-- VISTA 3: EVALUACIÓN Y QUIZ INTEGRADO -->
+        <section id="view-quiz" class="hidden space-y-6 max-w-4xl mx-auto">
+            <div class="flex items-center justify-between">
+                <button onclick="showHubView()" class="px-4 py-2 rounded-xl bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 text-xs sm:text-sm font-semibold border border-cyan-700">
+                    ← Volver al Hub
+                </button>
+                <span class="text-xs uppercase tracking-wider text-cyan-400 font-bold">Evaluación Integrada Final</span>
+            </div>
+
+            <div class="card-glass p-6 sm:p-8 rounded-3xl shadow-2xl">
+                <div class="mb-6 border-b border-cyan-800/60 pb-4">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Quiz de Síntesis Territorial</h2>
+                    <p class="text-cyan-200/80 text-sm mt-1">Responde las preguntas de opción múltiple y comparte tu reflexión para certificar tu participación.</p>
+                </div>
+
+                <form id="integrated-quiz-form" onsubmit="handleQuizSubmit(event)" class="space-y-8">
+                    
+                    <!-- Datos Estudiante -->
+                    <div class="bg-cyan-950/60 p-4 rounded-2xl border border-cyan-800">
+                        <label for="student-name" class="block text-sm font-semibold text-cyan-300 mb-2">Nombre Completo del Estudiante:</label>
+                        <input type="text" id="student-name" required placeholder="Ingresa tu nombre para el certificado" class="w-full px-4 py-3 rounded-xl bg-cyan-900/80 border border-cyan-700 text-white placeholder-cyan-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-medium">
+                    </div>
+
+                    <!-- Pregunta 1 -->
+                    <div class="space-y-3">
+                        <p class="font-bold text-white text-base">1. ¿Qué principio común conecta la gestión de la Ciénaga de Mallorquín (Caribe) y del Valle de Aburrá?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-800/60 cursor-pointer text-sm text-cyan-100 transition-colors">
+                                <input type="radio" name="q1" value="0" required class="mt-1 text-emerald-500 focus:ring-emerald-400">
+                                <span>Que la canalización de concreto y el pavimento resuelven todos los problemas de contaminación ambiental por sí solos.</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-800/60 cursor-pointer text-sm text-cyan-100 transition-colors">
+                                <input type="radio" name="q1" value="1" required class="mt-1 text-emerald-500 focus:ring-emerald-400">
+                                <span>Que la intervención técnica es insuficiente sin cultura ciudadana, educación ambiental y articulación metropolitana por consenso.</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-800/60 cursor-pointer text-sm text-cyan-100 transition-colors">
+                                <input type="radio" name="q1" value="0" required class="mt-1 text-emerald-500 focus:ring-emerald-400">
+                                <span>Que cada municipio o sector debe actuar de forma aislada sin importar lo que ocurra en los territorios vecinos.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="space-y-3">
+                        <p class="font-bold text-white text-base">2. En el Humedal de Córdoba (Gobernanza) y las Ciudades Amazónicas, ¿por qué es indispensable la participación de la comunidad?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-800/60 cursor-pointer text-sm text-cyan-100 transition-colors">
+                                <input type="radio" name="q2" value="1" required class="mt-1 text-emerald-500 focus:ring-emerald-400">
+                                <span>Porque vence la indiferencia y el miedo, legitimando los proyectos socioambientales e integrando el saber local con las leyes y la ciencia.</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-800/60 cursor-pointer text-sm text-cyan-100 transition-colors">
+                                <input type="radio" name="q2" value="0" required class="mt-1 text-emerald-500 focus:ring-emerald-400">
+                                <span>Únicamente para financiar la totalidad de los proyectos públicos con impuestos adicionales.</span>
+                            </label>
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/40 border border-cyan-800/60 cursor-pointer text-sm text-cyan-100 transition-colors">
+                                <input type="radio" name="q2" value="0" required class="mt-1 text-emerald-500 focus:ring-emerald-400">
+                                <span>Para garantizar que las ciudades se diseñen exclusivamente para el uso de vehículos automotores.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta Abierta / Reflexión -->
+                    <div class="space-y-3">
+                        <label for="reflection-text" class="block font-bold text-white text-base">
+                            3. Reflexión Personal de Cierre:
+                            <span class="block text-xs font-normal text-cyan-300/80 mt-0.5">¿Qué lección clave sobre la relación entre comunidad, desarrollo económico y cuidado ambiental te dejó esta experiencia integral?</span>
+                        </label>
+                        <textarea id="reflection-text" required rows="4" placeholder="Escribe tu reflexión detallada aquí..." class="w-full px-4 py-3 rounded-xl bg-cyan-950/80 border border-cyan-800 text-white placeholder-cyan-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm"></textarea>
+                    </div>
+
+                    <!-- Botón Enviar -->
+                    <button type="submit" class="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-lg shadow-xl hover:shadow-emerald-900/40 transition-all">
+                        Finalizar y Generar Certificado de Aprendizaje
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VISTA 4: CERTIFICADO FINAL Y MATRIZ RESUMEN -->
+        <section id="view-certificate" class="hidden max-w-4xl mx-auto space-y-6">
+            <div id="certificate-print-area" class="card-glass p-8 sm:p-12 rounded-3xl border-2 border-amber-400/50 relative overflow-hidden shadow-2xl bg-gradient-to-b from-cyan-950 to-slate-900">
+                <!-- Marca de Agua / Decoración -->
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none select-none">🏆</div>
+
+                <div class="text-center space-y-3 border-b border-cyan-800 pb-6">
+                    <span class="text-4xl">📜</span>
+                    <h2 class="text-xs uppercase tracking-widest text-amber-400 font-extrabold">Certificado de Excelencia Territorial</h2>
+                    <h3 id="cert-student-name" class="text-3xl sm:text-4xl font-extrabold text-white">Nombre Estudiante</h3>
+                    <p class="text-cyan-200/80 text-sm">Ha completado satisfactoriamente los 4 niveles de gestión y el Quiz de Síntesis de EcoSistemas Vivos.</p>
+                </div>
+
+                <!-- Desglose de Puntajes -->
+                <div class="py-6 space-y-6">
+                    <div class="flex flex-col sm:flex-row items-center justify-between bg-cyan-900/40 p-4 rounded-2xl border border-cyan-800/60 gap-4">
+                        <div>
+                            <span class="text-xs text-cyan-400 uppercase font-bold tracking-wider">Puntaje Total Consolidado</span>
+                            <div id="cert-total-pbr" class="text-4xl font-black text-amber-400">0 PBR</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-cyan-300 font-medium">Evaluación Teórica</span>
+                            <div id="cert-quiz-score" class="text-lg font-bold text-emerald-400">20 / 20 pts</div>
+                        </div>
+                    </div>
+
+                    <!-- Matriz de Niveles -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-bold text-cyan-300 uppercase tracking-wider">Matriz de Desempeño por Nivel:</h4>
+                        <div id="cert-matrix" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                            <!-- Se genera en JS -->
+                        </div>
+                    </div>
+
+                    <!-- Reflexión Grabada -->
+                    <div class="bg-cyan-950/70 p-4 rounded-2xl border border-cyan-800/80">
+                        <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2">Reflexión Registrada del Estudiante:</h4>
+                        <p id="cert-reflection" class="italic text-cyan-100/90 text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-cyan-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-cyan-400">
+                    <span>Fecha de emisión: <strong id="cert-date" class="text-white">--/--/----</strong></span>
+                    <span>Código Único: <strong id="cert-code" class="text-white font-mono">ECO-000000</strong></span>
+                </div>
+            </div>
+
+            <!-- Acciones Certificado -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                <button onclick="window.print()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-sm transition-all shadow-lg">
+                    🖨️ Imprimir / Guardar PDF
+                </button>
+                <button onclick="resetAllProgress()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-rose-900/60 hover:bg-rose-800 text-rose-200 font-bold text-sm transition-all border border-rose-700">
+                    🔄 Reiniciar Todo el Juego
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-cyan-950/80 border-t border-cyan-900/60 py-4 text-center text-xs text-cyan-400/80">
+        <p>Plataforma de Aprendizaje Socio-Ambiental Integrada · Basado en el libro guía de Gestión Territorial</p>
+    </footer>
+
+    <!-- SCRIPT PRINCIPAL Y CODIGO FUENTE DE LOS 4 JUEGOS -->
+    <script>
+        // CONFIGURACIÓN DE LOS JUEGOS Y SUS CODIGOS HTML COMPLETOS EMBEBIDOS
+        const GAMES_DATA = {
+            caribe: {
+                id: 'caribe',
+                title: 'Nivel Caribe',
+                subtitle: 'Ciénaga viva · Barranquilla',
+                emoji: '🦀',
+                location: 'Mallorquín & Río Magdalena',
+                desc: 'Equilibra Ambiente, Sociedad y Economía frente a la erosión, los arroyos urbanos y los residuos.',
+                code: `<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ciénaga viva · Nivel Caribe</title>
+<style>
+:root{--bg:#e6f2f1;--card:#fff;--ink:#0b2a33;--mut:#4a6670;--acc:#0b7285;--onacc:#fff;--line:#bcd7d9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}}
+:root[data-theme="dark"]{--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 ui-rounded,"Avenir Next","Trebuchet MS",system-ui,sans-serif;overflow:hidden;touch-action:manipulation}
+[hidden]{display:none!important}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;z-index:2;display:flex;gap:8px;align-items:center;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 14px;background:linear-gradient(var(--bg) 40%,transparent)}
+.m{flex:1;font-size:11px;font-weight:700}
+.m i{display:block;height:8px;border-radius:4px;background:var(--line);margin-top:3px;overflow:hidden}
+.m b{display:block;height:100%;width:0;transition:width .6s}
+#coins{font-weight:800;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px 9px;white-space:nowrap}
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+#hint{font-size:13px;color:var(--mut);min-height:38px}
+#tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0 10px}
+.t{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:6px 0;font:600 11px/1.25 inherit;font-family:inherit}
+.t span{display:block;font-size:22px}
+.t.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.t{touch-action:none;user-select:none;-webkit-user-select:none}
+#tools.blink .t{animation:bl 1.1s ease-in-out infinite}
+@keyframes bl{50%{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc)}}
+#ghost{position:fixed;z-index:7;font-size:40px;line-height:1;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+@media(prefers-reduced-motion:reduce){#tools.blink .t{animation:none;border-color:var(--acc)}}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;margin-top:12px;font:700 16px inherit;font-family:inherit;background:var(--acc);color:var(--onacc)}
+#panel .btn{margin-top:0}
+#sheet{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,20,25,.5)}
+#card{width:100%;max-width:520px;max-height:90%;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+#card h2{margin:4px 0 8px;font-size:21px;line-height:1.2}
+#card p{margin:8px 0;font-size:16px}
+#card small{color:var(--mut);display:block;margin-top:6px}
+.em{font-size:44px;line-height:1}
+.dots{display:flex;gap:6px;margin-top:14px}
+.dots u{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots u.on{background:var(--acc);width:22px;border-radius:4px}
+.op{display:block;width:100%;text-align:left;margin-top:8px;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:15px/1.35 inherit;font-family:inherit}
+.op.ok{border-color:#16a34a;background:rgba(22,163,74,.18)}
+.op.bad{border-color:#dc2626;background:rgba(220,38,38,.16)}
+.code{margin-top:10px;padding:10px;border-radius:10px;background:var(--bg);border:1px dashed var(--acc);font:13px/1.4 ui-monospace,monospace;user-select:all;word-break:break-word}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:6;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;text-align:center}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud" hidden>
+<div class="m">🌊 Ambiente<i><b id="ba" style="background:#0ea5e9"></b></i></div>
+<div class="m">🤝 Sociedad<i><b id="bs" style="background:#f59e0b"></b></i></div>
+<div class="m">💰 Economía<i><b id="be" style="background:#16a34a"></b></i></div>
+<div id="coins">🪙 100</div></div>
+<div id="panel" hidden><div id="hint"></div><div id="tools"></div><button class="btn" id="go"></button></div>
+<div id="ghost" hidden></div>
+<div id="toast"></div>
+<div id="sheet"><div id="card"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script>
+const $=s=>document.querySelector(s);
+const CARDS=[
+{e:"🦀",t:"Hola, soy Cangre",b:"Vivo en la Ciénaga de Mallorquín, en Barranquilla. Tu consorcio fue elegido para cuidar este territorio. Antes de actuar, te cuento qué está pasando aquí.",s:""},
+{e:"🏙️",t:"Una ciudad de río y mar",b:"Barranquilla está junto al río Magdalena y es el primer núcleo urbano de la costa Caribe, con cerca de 1,2 millones de habitantes. Su puerto, su industria y su comercio crecieron mucho en la última década, y con ese crecimiento llegaron retos ambientales.",s:"Libro guía, p. 26"},
+{e:"🌊",t:"Una ciénaga que se encoge",b:"Entre 1980 y 2010 la Ciénaga de Mallorquín perdió unas 650 hectáreas: el 43 % de su espejo de agua. La costa retrocedió 2.200 metros y se perdieron parches de manglar. Además recibe aguas negras de casas palafíticas, porque La Playa y Las Flores no tienen alcantarillado.",s:"Libro guía, pp. 26-27"},
+{e:"🌧️",t:"Arroyos que se desbordan",b:"Cuando llueve, la escorrentía forma arroyos urbanos. Los arroyos Grande y León desembocan en la ciénaga; otros, como Rebolo y El Salao, van al río. La ciudad creó el programa “Barranquilla sin Arroyos”, que canaliza los más peligrosos. Pero hay un detalle: en varios sectores la gente arroja basura a la calle cuando llueve, eso tapona las canalizaciones y los arroyos se desbordan.",s:"Libro guía, p. 28"},
+{e:"♻️",t:"Residuos sin dueño",b:"El 50 % de la población no separa en la fuente porque no sabe a quién entregar los residuos. Y el 45 % entrega aparatos electrónicos a recicladores que no trabajan en condiciones adecuadas, lo que contamina agua y suelo. Se identificaron 26 puntos críticos de acumulación de basura.",s:"Libro guía, p. 28"},
+{e:"🏛️",t:"Lo que hace la ciudad",b:"La autoridad ambiental (EPA Barranquilla Verde) trabaja en 8 líneas de acción: agua, suelo, aire, biodiversidad, cambio climático y más. Capacita y formaliza a los recuperadores ambientales (987 carnetizados en 2018), siembra 250.000 árboles y avanza para declarar la ciénaga área protegida. Su eje transversal: educación ambiental, participación ciudadana y gobernanza.",s:"Libro guía, pp. 27-29"},
+{e:"🎯",t:"Tu misión",b:"Tienes 100 monedas. Elige medidas y colócalas en los puntos del arroyo, luego activa la lluvia y mira qué pasa con la basura. Tendrás dos lluvias para mejorar. Equilibra Ambiente, Sociedad y Economía, y presta atención: lo que veas aquí te servirá para el quiz final.",s:""}];
+const TOOLS=[
+["can","🧱","Canalizar",20,"Programa “Barranquilla sin Arroyos”: encauza el agua, pero se tapona si le llega mucha basura."],
+["rec","♻️","Recicladores",25,"Puntos de recuperadores formalizados: atrapan residuos del arroyo y generan empleo."],
+["man","🌿","Manglar",30,"Restaura el borde de la ciénaga y filtra lo que llega. Solo va en el punto verde del borde."],
+["cam","📣","Campaña",20,"Educación ambiental: menos basura en la calle antes de que llueva. Toca de nuevo para quitarla."],
+["del","🗑️","Quitar",0,"Toca un punto ocupado para retirar la medida y recuperar sus monedas."]];
+const Q=[
+{q:"¿Por qué se desbordan arroyos de Barranquilla que ya están canalizados?",o:["Porque los canales son demasiado anchos y el agua se estanca","Porque en varios sectores se arroja basura a la calle cuando llueve y se tapona la canalización","Porque en Barranquilla casi no llueve","Porque los arroyos desembocan en el mar y no en la ciénaga"],a:1,e:"El libro explica que, pese al programa de canalización, la basura que cae a las calles con la lluvia tapona los canales y causa desbordamientos. Por eso la cultura ciudadana es clave.",s:"Libro guía, p. 28"},
+{q:"¿Qué parte del espejo de agua de la Ciénaga de Mallorquín se perdió entre 1980 y 2010?",o:["Cerca del 10 %","Cerca del 25 %","Cerca del 43 % (unas 650 hectáreas)","Cerca del 70 %"],a:2,e:"Se perdieron unas 650 hectáreas, casi la mitad del espejo de agua, con erosión de la playa y de parches de manglar.",s:"Libro guía, p. 26"},
+{q:"¿Por qué cerca de la mitad de la población no separa los residuos en la fuente?",o:["Porque no sabe a quién entregárselos","Porque separar residuos está prohibido","Porque no existen recicladores en la ciudad","Porque reciclar cuesta más que botar"],a:0,e:"El estudio citado en el libro halló que el 50 % no separa por no saber a quién entrega los residuos. Por eso se formaliza y capacita a los recuperadores ambientales.",s:"Libro guía, p. 28"},
+{q:"¿Cuál es el eje transversal que la autoridad ambiental considera clave para cambiar la cultura ciudadana a mediano y largo plazo?",o:["Construir más canalizaciones de concreto","Ampliar la urbanización en el borde de la ciénaga","Dejar la gestión de residuos solo a empresas privadas","Educación ambiental, participación ciudadana y gobernanza"],a:3,e:"El libro presenta este eje como el que sostiene a las demás líneas de acción para lograr un cambio de conducta ciudadana.",s:"Libro guía, p. 29"}];
+const cost=k=>TOOLS.find(x=>x[0]===k)[3];
+let coins=100,tool=null,slots=[null,null,null,null,null],camp=false,rain=0,phase="learn",ci=0,qi=0,qok=0,ans=false,last=null,Mt={amb:0,soc:0,eco:0};
+const cv=$("#c"),R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new THREE.Scene();S.background=new THREE.Color(0xbfe3f0);
+const cam=new THREE.PerspectiveCamera(48,1,.1,120);
+function fit(){const W=innerWidth,H=innerHeight;R.setSize(W,H,false);cam.aspect=W/H;const p=W<H;cam.position.set(0,p?30:36,p?20:26);cam.lookAt(0,0,p?1:2);
+const top=64,bot=Math.min(250,H*.34),yc=top+(H-top-bot)/2;cam.setViewOffset(W,H,0,Math.round(H/2-yc),W,H);cam.updateProjectionMatrix()}
+addEventListener("resize",fit);fit();
+S.add(new THREE.HemisphereLight(0xffffff,0x6b8e5a,.95));const dl=new THREE.DirectionalLight(0xffffff,.5);dl.position.set(6,12,5);S.add(dl);
+const M=c=>new THREE.MeshLambertMaterial({color:c});
+const add=(g,c,x,y,z,rx)=>{const m=new THREE.Mesh(g,M(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;S.add(m);return m};
+add(new THREE.PlaneGeometry(50,50),0x9cc77a,0,0,0,-Math.PI/2);
+const CL=new THREE.Color(0x38bdf8),DR=new THREE.Color(0x7a5c3a),cMat=M(0x38bdf8);
+const cie=new THREE.Mesh(new THREE.CircleGeometry(4.2,40),cMat);cie.rotation.x=-Math.PI/2;cie.position.set(2,.03,10.5);S.add(cie);
+add(new THREE.RingGeometry(4.2,5.2,40),0xe3cf9b,2,.02,10.5,-Math.PI/2);
+const curve=new THREE.CatmullRomCurve3([[-5,.1,-10],[-3.5,.1,-6],[-1,.1,-3],[1,.1,0],[2.2,.1,3.5],[2,.1,6.8]].map(p=>new THREE.Vector3(...p)));
+add(new THREE.TubeGeometry(curve,48,.5,8),0x3b9ed8,0,0,0).scale.y=.25;
+const HC=[0xf8d6a5,0xe9a9a1,0xa7d3e8,0xf3e79b,0xc7b5e6,0xbfe0b4],RC=[0xc2410c,0x9a3412,0x0e7490,0x7c2d12];
+let sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+const rs=curve.getPoints(60),SPz=[.18,.38,.58,.78].map(t=>curve.getPoint(t)).concat([new THREE.Vector3(-.6,0,7.7)]);
+const free=(x,z,a,b,c)=>rs.every(p=>Math.hypot(p.x-x,p.z-z)>a)&&SPz.every(p=>Math.hypot(p.x-x,p.z-z)>b)&&Math.hypot(x-2,z-10.5)>c;
+const D=new THREE.Object3D(),col=new THREE.Color();
+function inst(geo,n,f){const m=new THREE.InstancedMesh(geo,M(0xffffff),n);m.frustumCulled=false;for(let i=0;i<n;i++){D.position.set(0,0,0);D.rotation.set(0,0,0);D.scale.set(1,1,1);const c=f(i,D);D.updateMatrix();m.setMatrixAt(i,D.matrix);m.setColorAt(i,col.setHex(c))}S.add(m);return m}
+const H=[];for(let t=0;t<1500&&H.length<64;t++){const x=-8+rnd()*16,z=-12+rnd()*19,k=z<-4&&H.filter(h=>h.k).length<6;if(free(x,z,1.7,2.6,5.6)&&H.every(h=>Math.hypot(h.x-x,h.z-z)>(k?1.7:1.5)))H.push({x,z,k,h:k?2+rnd()*1.6:.7+rnd()*.5,c:k?0x9fb4c7:HC[H.length%6]})}
+inst(new THREE.BoxGeometry(1,1,1),H.length,(i,d)=>{const h=H[i];d.position.set(h.x,h.h/2,h.z);d.scale.set(h.k?1.15:.95,h.h,h.k?1.15:.95);return h.c});
+const HR=H.filter(h=>!h.k);
+inst(new THREE.ConeGeometry(.75,.5,4),HR.length,(i,d)=>{const h=HR[i];d.position.set(h.x,h.h+.25,h.z);d.rotation.y=Math.PI/4;return RC[i%4]});
+const T=[];for(let t=0;t<1500&&T.length<85;t++){const x=-9+rnd()*18,z=-12.5+rnd()*28;if(free(x,z,1.3,2.2,5.4)&&H.every(h=>Math.hypot(h.x-x,h.z-z)>1.2)&&T.every(q=>Math.hypot(q.x-x,q.z-z)>.9))T.push({x,z,s:.8+rnd()*.6})}
+inst(new THREE.CylinderGeometry(.1,.14,.6,5),T.length,(i,d)=>{const q=T[i];d.position.set(q.x,.3*q.s,q.z);d.scale.setScalar(q.s);return 0x7c5a3a});
+inst(new THREE.IcosahedronGeometry(.6,0),T.length,(i,d)=>{const q=T[i];d.position.set(q.x,.95*q.s,q.z);d.scale.setScalar(q.s);return[0x2f9e44,0x37b24d,0x2b8a3e,0x51cf66][i%4]});
+const P=[];for(let t=0;t<1500&&P.length<44;t++){const x=-8+rnd()*16,z=-11+rnd()*20;if(free(x,z,2.4,2.2,5.2)&&H.every(h=>Math.hypot(h.x-x,h.z-z)>1.1))P.push({x,z,a:rnd()*6.28,r:.4+rnd()*.7,v:.6+rnd()*.8,ph:rnd()*6.28,c:[0xe11d48,0x2563eb,0xf59e0b,0x7c3aed,0x059669,0xf97316][P.length%6]})}
+const pb=inst(new THREE.CylinderGeometry(.1,.13,.42,6),P.length,(i,d)=>{d.position.set(P[i].x,.38,P[i].z);return P[i].c}),ph=inst(new THREE.SphereGeometry(.12,6,5),P.length,(i,d)=>{d.position.set(P[i].x,.97,P[i].z);return 0xf2c9a0});
+function walk(t){P.forEach((p,i)=>{const s=Math.sin(t*p.v+p.ph),b=Math.abs(Math.sin(t*6*p.v+i))*.05;D.rotation.set(0,0,0);D.scale.setScalar(1.8);D.position.set(p.x+Math.cos(p.a)*p.r*s,.38+b,p.z+Math.sin(p.a)*p.r*s);D.updateMatrix();pb.setMatrixAt(i,D.matrix);D.position.y=.97+b;D.updateMatrix();ph.setMatrixAt(i,D.matrix)});pb.instanceMatrix.needsUpdate=ph.instanceMatrix.needsUpdate=true}
+[[-2.4,11],[-2.7,12.5],[6.2,11.5],[5.6,13]].forEach(([x,z])=>{add(new THREE.BoxGeometry(.9,.7,.9),0xf3e79b,x,.8,z);add(new THREE.CylinderGeometry(.08,.08,.7),0x7c5a3a,x,.35,z)});
+const ST=[.18,.38,.58,.78],SP=ST.map(t=>curve.getPoint(t));SP.push(new THREE.Vector3(-.6,0,7.7));
+const mk=SP.map((p,i)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.15,.12,28),new THREE.MeshBasicMaterial({color:i===4?0x22c55e:0xffffff,transparent:true,opacity:.75}));m.position.set(p.x,.12,p.z);S.add(m);return m});
+const bm=SP.map(p=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,4,12,1,true),new THREE.MeshBasicMaterial({color:0xfde047,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));m.position.set(p.x,2,p.z);S.add(m);return m});
+let hov=-1;const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const ok=i=>!!tool&&phase==="build"&&(tool==="del"?!!slots[i]:tool==="cam"?false:!slots[i]&&((i===4)===(tool==="man")));
+const G=[];
+function draw(i){if(G[i])S.remove(G[i]);G[i]=null;const t=slots[i];mk[i].material.opacity=t?.25:.75;if(!t)return;
+const g=new THREE.Group(),p=SP[i];g.position.set(p.x,0,p.z);
+const b=(geo,c,x,y,z)=>{const m=new THREE.Mesh(geo,M(c));m.position.set(x,y,z);g.add(m)};
+if(t==="can"){const w=new THREE.BoxGeometry(.4,.7,1.8);b(w,0x9ca3af,-.75,.35,0);b(w,0x9ca3af,.75,.35,0)}
+if(t==="rec"){b(new THREE.BoxGeometry(1.1,.8,1.1),0xf59e0b,1.4,.4,0);b(new THREE.ConeGeometry(.95,.6,4),0x16a34a,1.4,1.1,0)}
+if(t==="man"){for(let k=0;k<6;k++)b(new THREE.ConeGeometry(.45,1.1,6),k%2?0x15803d:0x166534,Math.sin(k*2.1)*.9,.55,Math.cos(k*2.1)*.9)}
+S.add(g);G[i]=g}
+const rn=new Float32Array(540);for(let k=0;k<180;k++){rn[k*3]=(Math.random()-.5)*20;rn[k*3+1]=Math.random()*12;rn[k*3+2]=Math.random()*26-10}
+const rg=new THREE.BufferGeometry();rg.setAttribute("position",new THREE.BufferAttribute(rn,3));
+const rp=new THREE.Points(rg,new THREE.PointsMaterial({color:0x1d4ed8,size:.18}));rp.visible=false;S.add(rp);
+const tg=new THREE.BoxGeometry(.32,.32,.32);
+let t0=0,pv=0,trash=[],fls={},pol=0,tmax=0;
+function clr(){trash.forEach(o=>S.remove(o.m));trash=[];Object.values(fls).forEach(f=>S.remove(f));fls={};pol=0;cMat.color.copy(CL)}
+function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-pv)/1000||0);pv=ts;
+if(phase==="rain"){const el=(ts-t0)/1000;
+for(let k=0;k<180;k++){rn[k*3+1]-=dt*14;if(rn[k*3+1]<0)rn[k*3+1]=12}rg.attributes.position.needsUpdate=true;
+trash.forEach(o=>{const a=(el-o.d)*.2;o.m.visible=a>=0&&!o.gone;const u=Math.min(o.stop,Math.max(0,a));const p=curve.getPoint(Math.min(u,1));
+o.m.position.set(p.x,.4+Math.sin(el*6+o.d*9)*.06,p.z);o.m.rotation.y=el+o.d;
+if(!o.fx&&a>=o.stop){o.fx=1;
+if(o.fate==="clog"){if(!fls[o.stop]){const f=new THREE.Mesh(new THREE.CircleGeometry(1,24),new THREE.MeshBasicMaterial({color:0x2563eb,transparent:true,opacity:.45}));f.rotation.x=-Math.PI/2;f.position.set(p.x,.2,p.z);f.userData.t=el;S.add(f);fls[o.stop]=f}}
+else{o.gone=1;o.m.visible=false;if(o.fate==="in"){pol++;cMat.color.copy(CL).lerp(DR,Math.min(1,pol/10))}}}});
+Object.values(fls).forEach(f=>f.scale.setScalar(1+Math.min(1.6,(el-f.userData.t)*.6)));
+if(el>tmax)finishRain()}
+walk(ts/1000);const pu=RM?.8:.5+.5*Math.sin(ts/170);
+mk.forEach((m,i)=>{const v=ok(i);m.material.color.setHex(v?0xfde047:i===4?0x22c55e:0xffffff);m.material.opacity=v?.5+.5*pu:slots[i]?.25:.75;m.scale.setScalar(i===hov&&v?1.3:1);bm[i].material.opacity=v?.15+.4*pu:0});
+R.render(S,cam)}
+requestAnimationFrame(loop);
+const pv3=new THREE.Vector3(),gh=$("#ghost");let d0=null,drag=null;
+function near(x,y){let b=-1,bd=1e9;SP.forEach((p,i)=>{pv3.set(p.x,0,p.z).project(cam);const d=Math.hypot((pv3.x+1)/2*innerWidth-x,(1-pv3.y)/2*innerHeight-y);if(d<bd){bd=d;b=i}});return bd<80?b:-1}
+function dragStart(e,k){drag=k;gh.textContent=TOOLS.find(x=>x[0]===k)[1];gh.hidden=false;dragMove(e)}
+function dragMove(e){const y=e.clientY-50;gh.style.left=e.clientX+"px";gh.style.top=y+"px";hov=near(e.clientX,y)}
+addEventListener("pointermove",e=>{if(drag)dragMove(e)});
+addEventListener("pointerup",e=>{if(!drag)return;const k=drag,y=e.clientY-50;drag=null;hov=-1;gh.hidden=true;if(y<$("#panel").getBoundingClientRect().top){const i=near(e.clientX,y);if(i>=0){tool=k;place(i)}else toast("Suéltala sobre un punto que brilla")}});
+addEventListener("pointercancel",()=>{drag=null;gh.hidden=true;hov=-1});
+cv.addEventListener("pointerdown",e=>{d0=[e.clientX,e.clientY]});
+cv.addEventListener("pointerup",e=>{const q=d0;d0=null;if(!q||Math.hypot(e.clientX-q[0],e.clientY-q[1])>10)return;const i=near(e.clientX,e.clientY);if(i>=0)place(i)});
+function toast(t){const e=$("#toast");e.textContent=t;e.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.opacity=0,1800)}
+function hud(){$("#coins").textContent="🪙 "+coins;$("#ba").style.width=Mt.amb+"%";$("#bs").style.width=Mt.soc+"%";$("#be").style.width=Mt.eco+"%"}
+TOOLS.forEach(([k,e,n,c])=>{const b=document.createElement("button");b.className="t";b.id="t_"+k;b.innerHTML=\`<span>\${e}</span>\${n}<br>\${c?"🪙 "+c:"gratis"}\`;b.onpointerdown=e=>{pick(k);if(phase==="build"&&["can","rec","man"].includes(k))dragStart(e,k)};$("#tools").append(b)});
+function pick(k){if(phase!=="build")return;$("#tools").classList.remove("blink");$("#hint").textContent=TOOLS.find(x=>x[0]===k)[4]+(["can","rec","man"].includes(k)?" Arrástrala a un punto que brille.":"");
+if(k==="cam"){if(camp){camp=false;coins+=20}else if(coins>=20){camp=true;coins-=20}else toast("No alcanzan las monedas");$("#t_cam").classList.toggle("on",camp);hud();return}
+tool=k;document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.id==="t_"+k||(b.id==="t_cam"&&camp)))}
+function place(i){if(phase!=="build")return;
+if(!tool)return toast("Elige una medida abajo");
+if(tool==="del"){if(slots[i]){coins+=cost(slots[i]);slots[i]=null;draw(i);hud()}return}
+if(tool==="cam")return;
+if(slots[i])return toast("Ocupado: usa 🗑️ para quitarlo");
+if((i===4)!==(tool==="man"))return toast(i===4?"Aquí solo va el manglar":"El manglar va en el punto verde del borde");
+if(coins<cost(tool))return toast("No alcanzan las monedas");
+coins-=cost(tool);slots[i]=tool;draw(i);hud()}
+function sim(){const n=camp?14:24;const list=[...Array(n).keys()].map(i=>({i,fate:"in",stop:1}));let rem=list.slice(),fl=0;
+for(let s=0;s<4;s++){const b=slots[s];
+if(b==="rec")rem=rem.filter(o=>{if((o.i+s)%5<2){o.fate="int";o.stop=ST[s];return false}return true});
+else if(b==="can"&&rem.length>6){rem.forEach(o=>{o.fate="clog";o.stop=ST[s]});fl++;rem=[]}}
+if(slots[4]==="man")rem=rem.filter(o=>{if(o.i%2===0){o.fate="filt";return false}return true});
+return{list,fl}}
+function startRain(){if(phase!=="build")return;phase="rain";rain++;$("#panel").hidden=true;clr();last=sim();
+last.list.forEach((o,k)=>{const m=new THREE.Mesh(tg,M([0x8b5a2b,0xe5e7eb,0x38bdf8,0xf59e0b][k%4]));m.visible=false;S.add(m);o.m=m;o.d=k*.22;trash.push(o)});
+tmax=Math.max(...last.list.map(o=>o.d+o.stop/.2))+1.6;t0=performance.now();S.background.set(0x8aa0ad);rp.visible=true}
+function finishRain(){phase="result";rp.visible=false;S.background.set(0xbfe3f0);
+const L=last.list,fl=last.fl,cnt=f=>L.filter(o=>o.fate===f).length,inn=cnt("in"),clog=cnt("clog"),rec=slots.filter(x=>x==="rec").length;
+const cl=v=>Math.max(0,Math.min(100,Math.round(v)));
+Mt={amb:cl(100*(1-(inn+clog/2)/24)),soc:cl(20+20*rec+(camp?25:0)+(slots[4]?10:0)-25*fl),eco:cl(40+coins/2-25*fl+(slots[4]?5:0))};hud();
+const t=[\`Basura generada: \${L.length}. Atrapada por recicladores: \${cnt("int")}. Filtrada por el manglar: \${cnt("filt")}. Llegó a la ciénaga: \${inn}.\`];
+if(fl)t.push("💥 La canalización se tapó con basura y el arroyo se desbordó sobre el barrio. Es lo que describe el libro: canalizar sin cambiar el comportamiento ciudadano no basta (p. 28).");
+else if(slots.includes("can"))t.push("🧱 La canalización funcionó porque le llegó poca basura.");
+if(!camp)t.push("📣 Sin campaña, se genera más basura en las calles.");
+if(!rec)t.push("♻️ Sin recicladores formalizados nadie intercepta los residuos (el libro menciona 987 carnetizados en 2018).");
+show(\`<h2>🌧️ Lluvia \${rain}/2</h2>\${t.map(x=>\`<p>\${x}</p>\`).join("")}<p><b>🌊 \${Mt.amb} · 🤝 \${Mt.soc} · 💰 \${Mt.eco}</b></p><button class="btn" id="nx">\${rain<2?"Ajustar y volver a llover (+🪙 25)":"Ir al quiz final"}</button>\`);
+$("#nx").onclick=()=>{if(rain<2){clr();coins+=25;phase="build";sh.hidden=true;$("#panel").hidden=false;$("#go").textContent="☔ Activar lluvia (2/2)";hud()}else quiz()}}
+const sh=$("#sheet"),cd=$("#card");
+function show(h){cd.innerHTML=h;sh.hidden=false;cd.scrollTop=0}
+function learn(){const c=CARDS[ci],last=ci===CARDS.length-1;
+show(\`<div class="em">\${c.e}</div><h2>\${c.t}</h2><p>\${c.b}</p>\${c.s?\`<small>📖 \${c.s}</small>\`:""}<div class="dots">\${CARDS.map((_,k)=>\`<u class="\${k===ci?"on":""}"></u>\`).join("")}</div><button class="btn" id="nx">\${last?"¡A jugar!":"Siguiente"}</button>\`);
+$("#nx").onclick=()=>{if(last)startBuild();else{ci++;learn()}}}
+function startBuild(){phase="build";sh.hidden=true;$("#hud").hidden=false;$("#panel").hidden=false;$("#hint").textContent="① Toca una medida que parpadea. ② Arrástrala a un punto que brille. ③ Activa la lluvia.";$("#tools").classList.add("blink");tool=null;$("#go").textContent="☔ Activar lluvia (1/2)";hud()}
+$("#go").onclick=startRain;
+function quiz(){const q=Q[qi];clr();$("#hud").hidden=true;ans=false;
+show(\`<small>Pregunta \${qi+1} de \${Q.length}</small><h2>\${q.q}</h2>\`+q.o.map((o,k)=>\`<button class="op" data-k="\${k}">\${o}</button>\`).join("")+\`<div id="fb"></div>\`);
+cd.querySelectorAll(".op").forEach(b=>b.onclick=()=>{if(ans)return;ans=true;const k=+b.dataset.k,ok=k===q.a;if(ok)qok++;
+cd.querySelectorAll(".op").forEach((x,j)=>{if(j===q.a)x.classList.add("ok");else if(j===k)x.classList.add("bad")});
+$("#fb").innerHTML=\`<p><b>\${ok?"✅ ¡Correcto!":"❌ No exactamente."}</b> \${q.e}</p><small>📖 \${q.s}</small><button class="btn" id="nx">\${qi<Q.length-1?"Siguiente":"Ver mi resultado"}</button>\`;
+$("#nx").onclick=()=>{qi++;if(qi<Q.length)quiz();else end()}})}
+function end(){const pbr=Math.round((Mt.amb+Mt.soc+Mt.eco)/3*.4)+15*qok;
+if(window.parent && window.parent.postMessage){
+    window.parent.postMessage({ juegoId: 'caribe', pbr: pbr, amb: Mt.amb, soc: Mt.soc, eco: Mt.eco, quiz: qok }, '*');
+}
+const n=k=>slots.filter(x=>x===k).length,dec=[n("can")&&\`Canalización ×\${n("can")}\`,n("rec")&&\`Recicladores ×\${n("rec")}\`,n("man")&&"Manglar",camp&&"Campaña ciudadana"].filter(Boolean).join(", ")||"ninguna medida";
+const msg=pbr>=80?"Territorio modelo: lograste equilibrar ambiente, sociedad y economía.":pbr>=50?"Buen avance. Revisa qué medida podría equilibrar mejor los tres medidores.":"La ciénaga necesita más ayuda. Vuelve a intentarlo con otra combinación.";
+show(\`<div class="em">🏆</div><h2>\${pbr} de 100 PBR</h2><p>\${msg}</p><p>Tus decisiones: \${dec}.</p><div class="code">CARIBE | PBR \${pbr}/100 | Amb \${Mt.amb} Soc \${Mt.soc} Eco \${Mt.eco} | Quiz \${qok}/\${Q.length}</div><small>¡Excelente! Tu progreso se ha enviado al Menú Principal.</small><button class="btn" id="nx">Jugar de nuevo</button>\`);
+$("#nx").onclick=()=>location.reload()}
+learn();
+<\/script></body></html>`
+            },
+            gobernanza: {
+                id: 'gobernanza',
+                title: 'Nivel Gobernanza',
+                subtitle: 'El pacto de los actores · Bogotá',
+                emoji: '🦆',
+                location: 'Humedal de Córdoba',
+                desc: 'Consensa acuerdos entre Estado, Academia, Comunidad y Empresa para proteger el ecosistema.',
+                code: `<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El pacto de los actores · Nivel Gobernanza</title>
+<style>
+:root{--bg:#e6f2f1;--card:#fff;--ink:#0b2a33;--mut:#4a6670;--acc:#0b7285;--onacc:#fff;--line:#bcd7d9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}}
+:root[data-theme="dark"]{--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 ui-rounded,"Avenir Next","Trebuchet MS",system-ui,sans-serif;overflow:hidden;touch-action:manipulation}
+[hidden]{display:none!important}
+#ep{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px))}
+#eph{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:15px}
+#eps{font-size:13px;color:var(--mut);min-height:38px;margin-top:4px}
+#epc{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;margin:6px 0}
+#epc i{height:16px;border-radius:3px;background:var(--line)}
+#epc i.cur{outline:2px solid var(--ink);outline-offset:1px}
+#epn{font-size:12px;color:var(--mut)}
+.chips span{display:inline-block;margin:3px 4px 0 0;padding:3px 7px;border-radius:10px;background:var(--bg);font-size:12px;border:1px solid var(--line)}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;z-index:2;display:flex;gap:8px;align-items:center;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 14px;background:linear-gradient(var(--bg) 40%,transparent)}
+.m{flex:1;font-size:11px;font-weight:700}
+.m i{display:block;height:8px;border-radius:4px;background:var(--line);margin-top:3px;overflow:hidden}
+.m b{display:block;height:100%;width:0;transition:width .6s}
+#coins{font-weight:800;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px 9px;white-space:nowrap}
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+#hint{font-size:13px;color:var(--mut);min-height:38px}
+#tools{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:8px 0 10px}
+.t{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:6px 0;font:600 10px/1.2 inherit;font-family:inherit}
+.t span{display:block;font-size:20px}
+.t.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.t{touch-action:none;user-select:none;-webkit-user-select:none}
+#tools.blink .t{animation:bl 1.1s ease-in-out infinite}
+@keyframes bl{50%{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc)}}
+#ghost{position:fixed;z-index:7;font-size:40px;line-height:1;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+@media(prefers-reduced-motion:reduce){#tools.blink .t{animation:none;border-color:var(--acc)}}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;margin-top:12px;font:700 16px inherit;font-family:inherit;background:var(--acc);color:var(--onacc)}
+#panel .btn{margin-top:0}
+#sheet{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,20,25,.5)}
+#card{width:100%;max-width:520px;max-height:90%;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+#card h2{margin:4px 0 8px;font-size:21px;line-height:1.2}
+#card p{margin:8px 0;font-size:16px}
+#card small{color:var(--mut);display:block;margin-top:6px}
+.em{font-size:44px;line-height:1}
+.dots{display:flex;gap:6px;margin-top:14px}
+.dots u{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots u.on{background:var(--acc);width:22px;border-radius:4px}
+.op{display:block;width:100%;text-align:left;margin-top:8px;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:15px/1.35 inherit;font-family:inherit}
+.op.ok{border-color:#16a34a;background:rgba(22,163,74,.18)}
+.op.bad{border-color:#dc2626;background:rgba(220,38,38,.16)}
+.code{margin-top:10px;padding:10px;border-radius:10px;background:var(--bg);border:1px dashed var(--acc);font:13px/1.4 ui-monospace,monospace;user-select:all;word-break:break-word}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:6;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;text-align:center}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud" hidden>
+<div class="m">🌊 Ambiente<i><b id="ba" style="background:#0ea5e9"></b></i></div>
+<div class="m">🤝 Sociedad<i><b id="bs" style="background:#f59e0b"></b></i></div>
+<div class="m">💰 Economía<i><b id="be" style="background:#16a34a"></b></i></div>
+<div id="coins">🪙 100</div></div>
+<div id="panel" hidden><div id="hint"></div><div id="tools"></div><button class="btn" id="go"></button></div>
+<div id="ghost" hidden></div>
+<div id="ep" hidden><div id="eph"></div><div id="epc"></div><div id="eps"></div><div id="epn"></div></div>
+<div id="toast"></div>
+<div id="sheet"><div id="card"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script>
+const $=s=>document.querySelector(s);
+const CARDS=[
+{e:"🦆",t:"Hola, soy Tingua",b:"Soy una tingua de pico roja y vivo en el Humedal de Córdoba, en Bogotá. Una comunidad vecina rechaza un proyecto de manejo de residuos y economía circular por desconfianza hacia las autoridades. Tu equipo debe lograr un pacto entre el Estado, la empresa, la academia y la comunidad.",s:""},
+{e:"🌿",t:"Un humedal en la ciudad",b:"El Humedal de Córdoba tiene tres cuerpos lagunares y más de 130 registros de aves, residentes y migratorias. Un colectivo de vecinos lo cuida desde hace casi veinte años, y el proceso jurídico, técnico, cultural y social comenzó en 1998. Su primera lección: una comunidad se organiza ante todo con un propósito común.",s:"Libro guía, pp. 158-160"},
+{e:"😨",t:"Indiferencia ligada al miedo",b:"Un integrante del colectivo invitó a unos vecinos de toda la vida a conocer el humedal. Respondieron que nunca lo habían visitado y que les habían dicho que era mejor no acercarse. El texto lo llama indiferencia ligada al miedo, característica de nuestra cultura ciudadana. La propuesta, con recorridos y un intérprete ambiental, no fue aceptada.",s:"Libro guía, p. 159"},
+{e:"🌳",t:"Cuando llegó la presión",b:"Una ambiciosa ciclorruta puso en peligro más de 1.500 árboles. El conocimiento se hizo indispensable y la ley ayudó: un Fallo de Acción Popular y un Documento de Concertación con el Acueducto y la Secretaría de Ambiente trajeron más calidad de agua, más vegetación y más aves. Además, un caudal ecológico constante de la quebrada Santa Bárbara (3 litros por segundo) mejoró el oxígeno del agua.",s:"Libro guía, pp. 159-160"},
+{e:"📊",t:"La ciudadanía como actor",b:"La Red de Ciudades Cómo Vamos produce información ciudadana: encuestas de percepción y datos abiertos en la plataforma Ciudatos. Sus encuestas muestran que lo ambiental tiene los niveles de satisfacción más bajos, y que la contaminación del aire y del agua ronda el 16-17 %. Con esa información convoca a los actores a dialogar y construir soluciones.",s:"Libro guía, pp. 149-150"},
+{e:"💚",t:"Producir conservando",b:"El prólogo plantea la premisa “producir conservando y conservar produciendo”: las ciudades tienen un enorme potencial para los negocios verdes y la economía circular. Propone una “biodiverciudad” que conserve y use de forma sostenible la base natural, y una participación ciudadana capacitada e informada, con espacios de diálogo entre Estado, sector privado y sociedad civil.",s:"Libro guía, pp. 8-9"},
+{e:"🔁",t:"Otras alianzas del libro",b:"En el Valle de Aburrá, más de 66 empresas, transportadores, la academia y la ciudadanía firmaron el Pacto por la Calidad del Aire. En Barranquilla se capacita y formaliza a los recuperadores ambientales, y la educación ambiental y la participación son el eje del cambio de conducta. Los actores se articulan con roles distintos.",s:"Libro guía, pp. 27-29 y 143"},
+{e:"🎯",t:"Tu misión",b:"Hay 30 vecinos en la plaza, todos en contra del proyecto. El color del cuerpo muestra su postura (🔴 en contra, 🟡 dudoso, 🟢 a favor) y el del sombrero su preocupación: 🟣 miedo, 🟠 desconfianza, 🟡 economía, 🔵 ambiente. Tienes 100 monedas y 8 puestos. Arrastra acciones a los actores: cada acción rinde más con el actor indicado. Luego se hacen 3 reuniones y una votación. Necesitas mayoría: 16 de 30.",s:""}];
+const TOOLS=[
+["edu","📚","Educación",15,"Educación ambiental: talleres y recorridos guiados por el humedal. Vence el miedo y la indiferencia. Rinde más con Academia o Comunidad."],
+["con","🤝","Concertar",20,"Concertación: mesa entre el Estado y los vecinos, como con el Acueducto y la Secretaría de Ambiente. Recupera la confianza. Rinde más con Estado."],
+["dat","🔬","Datos",20,"Datos abiertos y monitoreo de la calidad del agua. Convence a quien se preocupa por el ambiente. Rinde más con Academia o Estado."],
+["coi","💰","Coinversión",25,"Coinversión comunitaria: empresa y vecinos invierten y comparten beneficios (negocio verde y economía circular). Rinde más con Empresa o Comunidad."],
+["ben","🏘️","Beneficios",25,"Beneficios tangibles: servicios públicos, senderos y empleo para el barrio. Rinde más con Estado o Empresa."],
+["del","🗑️","Quitar",0,"Toca un puesto ocupado para retirar la acción y recuperar sus monedas."]];
+const Q=[
+{q:"En el Humedal de Córdoba, ¿qué puso en peligro a más de 1.500 árboles y cómo se enfrentó?",o:["Un incendio forestal; se resolvió talando el resto del bosque","Una urbanización privada; se resolvió comprando los lotes","Una ambiciosa ciclorruta; se enfrentó con conocimiento, apoyo de la ley y concertación con el Acueducto y la Secretaría de Ambiente","Una sequía; se resolvió con riego manual"],a:2,e:"La comunidad usó el conocimiento y la ley, y la concertación con los responsables de los humedales trajo más calidad de agua, vegetación y aves.",s:"Libro guía, p. 159"},
+{q:"Algunos vecinos del humedal decían que era “mejor no acercarse”. ¿Qué refleja esto según el texto?",o:["Indiferencia ligada al miedo, característica de la cultura ciudadana","Que el humedal está contaminado con químicos","Que la comunidad apoya cerrarlo","Que la ley prohíbe visitarlo"],a:0,e:"El texto lo describe como indiferencia ligada al miedo y propone acercar a la gente con recorridos y un intérprete ambiental.",s:"Libro guía, p. 159"},
+{q:"¿Qué se logró con el Documento de Concertación anexo al Fallo de Acción Popular?",o:["Un muro de concreto alrededor del humedal","Convertirlo en un parque con canchas deportivas","Trasladar las aves a otro humedal","Un caudal constante de agua limpia de la quebrada Santa Bárbara que mejoró el oxígeno del humedal"],a:3,e:"Se proveyó un caudal ecológico constante de unos 3 litros por segundo, con efectos beneficiosos en la calidad del agua y los procesos biológicos.",s:"Libro guía, p. 160"},
+{q:"¿Qué plantea la premisa “producir conservando y conservar produciendo”?",o:["Detener toda actividad industrial para reforestar el país","Que producir y conservar van de la mano: las ciudades tienen potencial para negocios verdes y economía circular que cuidan la base natural","Cobrar impuestos dobles a las empresas de alimentos","Privatizar las reservas naturales para mantenerlas"],a:1,e:"El prólogo habla del enorme potencial urbano para los negocios verdes y la economía circular, y de una biodiverciudad que conserve y use sosteniblemente la base natural.",s:"Libro guía, p. 8"}];
+const ACT=[{n:"Estado",e:"🏛️",x:-6.2,z:-4},{n:"Academia",e:"🔬",x:6.2,z:-4},{n:"Comunidad",e:"👥",x:-6.2,z:4.6},{n:"Empresa",e:"🏭",x:6.2,z:4.6}];
+const PL=[[-4.2,-5.6],[-4.2,-2.4],[4.2,-5.6],[4.2,-2.4],[-4.2,3],[-4.2,6.2],[4.2,3],[4.2,6.2]].map(([x,z])=>({x,z})),SA=[0,0,1,1,2,2,3,3];
+const FIT={edu:[1,2],con:[0,2],dat:[1,0],coi:[3,2],ben:[0,3]},MX={edu:[1,.2,.1,.4],con:[.3,1,.2,.2],dat:[.1,.5,.1,1],coi:[.1,.2,1,.2],ben:[.3,.4,.7,.1]};
+const TY=[{n:"Miedo e indiferencia",c:0xa855f7,em:"🟣",k:8,rec:"educación ambiental y recorridos guiados (p. 159)"},{n:"Desconfianza en las autoridades",c:0xf97316,em:"🟠",k:8,rec:"concertación entre el Estado y los vecinos (p. 159)"},{n:"Preocupación económica",c:0xfacc15,em:"🟡",k:7,rec:"coinversión y beneficios tangibles"},{n:"Preocupación ambiental",c:0x38bdf8,em:"🔵",k:7,rec:"datos abiertos y monitoreo del agua (pp. 150 y 160)"}];
+const RN={edu:"Educación ambiental",con:"Concertación",dat:"Datos y monitoreo",coi:"Coinversión",ben:"Beneficios tangibles"};
+const SCH=["#ef4444","#facc15","#22c55e"],SCOL=[0xef4444,0xfacc15,0x22c55e];
+const cost=k=>TOOLS.find(x=>x[0]===k)[3],fv=(a,i)=>SA[i]===FIT[a][0]?1:SA[i]===FIT[a][1]?.6:.25;
+let coins=100,tool=null,slots=Array(8).fill(null),paid=Array(8).fill(0),round=0,phase="learn",ci=0,qi=0,qok=0,ans=false,Mt={amb:0,soc:0,eco:0},st=[],stage=-1,lastKey=-1,cc=null,t0=0,pv=0,hov=-1,pjT=.12,final=null;
+const cv=$("#c"),R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new THREE.Scene();S.background=new THREE.Color(0xcfe6f0);
+const cam=new THREE.PerspectiveCamera(48,1,.1,140);
+function fit(){const W=innerWidth,H=innerHeight;R.setSize(W,H,false);cam.aspect=W/H;const p=W<H;cam.position.set(0,p?30:36,p?20:26);cam.lookAt(0,0,p?0:1);
+const top=64,bot=Math.min(250,H*.34),yc=top+(H-top-bot)/2;cam.setViewOffset(W,H,0,Math.round(H/2-yc),W,H);cam.updateProjectionMatrix()}
+addEventListener("resize",fit);fit();
+S.add(new THREE.HemisphereLight(0xffffff,0x5b7f4d,.95));const dl=new THREE.DirectionalLight(0xffffff,.5);dl.position.set(6,12,5);S.add(dl);
+const M=c=>new THREE.MeshLambertMaterial({color:c});
+const add=(g,c,x,y,z,rx)=>{const m=new THREE.Mesh(g,M(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;S.add(m);return m};
+add(new THREE.PlaneGeometry(70,70),0x8bbd6a,0,0,0,-Math.PI/2);
+add(new THREE.CircleGeometry(1,40),0x3b9ed8,0,.03,-9,-Math.PI/2).scale.set(4.6,2.9,1);
+add(new THREE.CircleGeometry(1,40),0xe6dcc3,0,.02,.6,-Math.PI/2).scale.set(3.4,4.4,1);
+add(new THREE.BoxGeometry(5,.1,3),0xd6d3d1,0,.05,9.6);
+const pj=new THREE.Mesh(new THREE.BoxGeometry(3,2,2).translate(0,1,0),M(0x6ee7b7));pj.position.set(0,.1,9.6);pj.scale.y=.12;S.add(pj);
+let sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+const D=new THREE.Object3D(),col=new THREE.Color();
+function inst(geo,n,f){const m=new THREE.InstancedMesh(geo,M(0xffffff),n);m.frustumCulled=false;for(let i=0;i<n;i++){D.position.set(0,0,0);D.rotation.set(0,0,0);D.scale.set(1,1,1);const c=f(i,D);D.updateMatrix();m.setMatrixAt(i,D.matrix);m.setColorAt(i,col.setHex(c))}S.add(m);return m}
+const fr=(x,z)=>PL.every(p=>Math.hypot(p.x-x,p.z-z)>1.9)&&ACT.every(a=>Math.hypot(a.x-x,a.z-z)>2.4)&&(x/5.2)**2+((z+9)/3.5)**2>1&&(x/3.8)**2+((z-.6)/4.8)**2>1&&!(Math.abs(x)<3.2&&z>7.6);
+const RE=[];for(let k=0;k<54;k++){const a=k/54*6.283;RE.push({x:Math.cos(a)*(4.6+.4*rnd()),z:-9+Math.sin(a)*(2.9+.4*rnd()),h:.5+rnd()*.5})}
+inst(new THREE.CylinderGeometry(.04,.05,1,5),RE.length,(i,d)=>{const r=RE[i];d.position.set(r.x,r.h/2,r.z);d.scale.y=r.h;return 0x4d7c0f});
+const T=[];for(let t=0;t<2500&&T.length<60;t++){const x=-8+rnd()*16,z=-12.5+rnd()*23.5;if(fr(x,z)&&T.every(q=>Math.hypot(q.x-x,q.z-z)>1))T.push({x,z,s:.8+rnd()*.6})}
+inst(new THREE.CylinderGeometry(.1,.14,.6,5),T.length,(i,d)=>{const q=T[i];d.position.set(q.x,.3*q.s,q.z);d.scale.setScalar(q.s);return 0x7c5a3a});
+inst(new THREE.IcosahedronGeometry(.6,0),T.length,(i,d)=>{const q=T[i];d.position.set(q.x,.95*q.s,q.z);d.scale.setScalar(q.s);return[0x2f9e44,0x37b24d,0x2b8a3e,0x51cf66][i%4]});
+const HC=[0xf8d6a5,0xe9a9a1,0xa7d3e8,0xf3e79b,0xc7b5e6,0xbfe0b4],H=[];for(let t=0;t<2500&&H.length<16;t++){const x=-8+rnd()*16,z=-12.5+rnd()*23.5;if(fr(x,z)&&T.every(q=>Math.hypot(q.x-x,q.z-z)>1.1)&&H.every(h=>Math.hypot(h.x-x,h.z-z)>1.8))H.push({x,z,h:.8+rnd()*.5,c:HC[H.length%6]})}
+inst(new THREE.BoxGeometry(1,1,1),H.length,(i,d)=>{const h=H[i];d.position.set(h.x,h.h/2,h.z);d.scale.set(1,h.h,1);return h.c});
+inst(new THREE.ConeGeometry(.8,.5,4),H.length,(i,d)=>{const h=H[i];d.position.set(h.x,h.h+.25,h.z);d.rotation.y=Math.PI/4;return 0xc2410c});
+function bld(a,ai){const g=new THREE.Group();g.position.set(a.x,0,a.z);const b=(geo,c,x,y,z)=>{const m=new THREE.Mesh(geo,M(c));m.position.set(x,y,z);g.add(m)};
+if(ai===0){b(new THREE.BoxGeometry(1.6,1.5,1.5),0xcbd5e1,0,.75,0);b(new THREE.CylinderGeometry(.04,.04,1.4,5),0x6b7280,.6,2.2,0);b(new THREE.BoxGeometry(.6,.35,.05),0x2563eb,.9,2.7,0)}
+if(ai===1){b(new THREE.BoxGeometry(1.6,1.1,1.5),0xf5d0a9,0,.55,0);b(new THREE.SphereGeometry(.7,10,6,0,6.283,0,1.571),0x7c3aed,0,1.1,0)}
+if(ai===2){b(new THREE.CylinderGeometry(.7,.8,.8,10),0xb45309,0,.4,0);b(new THREE.ConeGeometry(1.2,1,8),0xca8a04,0,1.3,0)}
+if(ai===3){b(new THREE.BoxGeometry(1.6,1,1.3),0x94a3b8,0,.5,0);b(new THREE.CylinderGeometry(.14,.18,.9,8),0x64748b,.5,1.4,0);b(new THREE.ConeGeometry(.35,.5,6),0x22c55e,-.4,1.2,0)}S.add(g)}
+ACT.forEach(bld);
+const C=[];TY.forEach((t,j)=>{for(let k=0;k<t.k;k++){let x,z,n=0;do{x=(rnd()*2-1)*2.7;z=-3+rnd()*7.2;n++}while(n<80&&C.some(c=>Math.hypot(c.x-x,c.z-z)<.85));C.push({t:j,r:.8+1.6*rnd(),x,z,v:.5+rnd(),ph:rnd()*6.28,pop:-9})}});
+const bd=inst(new THREE.CylinderGeometry(.1,.13,.42,6),30,()=>0xef4444),hd=inst(new THREE.SphereGeometry(.12,6,5),30,()=>0xf2c9a0),ht=inst(new THREE.ConeGeometry(.1,.2,6),30,i=>TY[C[i].t].c);
+st=C.map(()=>0);
+function paintC(){C.forEach((c,i)=>bd.setColorAt(i,col.setHex(SCOL[st[i]])));bd.instanceColor.needsUpdate=true}paintC();
+function crowd(t){C.forEach((c,i)=>{const u=t-c.pop,b=u<.9?Math.abs(Math.sin(u*10))*.4*(1-u/.9):0,x=c.x+Math.sin(t*c.v+c.ph)*.07,z=c.z+Math.cos(t*c.v*.8+c.ph)*.07;D.rotation.set(0,0,0);D.scale.setScalar(1.8);D.position.set(x,.38+b,z);D.updateMatrix();bd.setMatrixAt(i,D.matrix);D.position.y=.97+b;D.updateMatrix();hd.setMatrixAt(i,D.matrix);D.position.y=1.32+b;D.updateMatrix();ht.setMatrixAt(i,D.matrix)});[bd,hd,ht].forEach(m=>m.instanceMatrix.needsUpdate=true)}
+const bi=inst(new THREE.BoxGeometry(.35,.05,.18),8,()=>0xffffff);
+function birds(t){for(let i=0;i<8;i++){const a=t*.5+i*.8,r=2.2+(i%3)*.8;D.rotation.set(0,-a,0);D.scale.set(1,1,1);D.position.set(Math.cos(a)*r*1.4,2.2+Math.sin(t*2+i)*.3,-9+Math.sin(a)*r*.8);D.updateMatrix();bi.setMatrixAt(i,D.matrix)}bi.instanceMatrix.needsUpdate=true}
+const mk=PL.map(p=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.95,.95,.12,28),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.75}));m.position.set(p.x,.14,p.z);S.add(m);return m});
+const bm=PL.map(p=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,4,12,1,true),new THREE.MeshBasicMaterial({color:0xfde047,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));m.position.set(p.x,2,p.z);S.add(m);return m});
+const LB=[...ACT.map(a=>({t:a.e+" "+a.n,x:a.x,z:a.z,dy:34})),{t:"🌿 Humedal de Córdoba",x:0,z:-9,dy:-6},{t:"♻️ Proyecto: economía circular",x:0,z:9.6,dy:34},{t:"🗳️ Plaza de la asamblea",x:0,z:-3.4,dy:0}].map(l=>{const e=document.createElement("div");e.style.cssText="position:fixed;left:0;top:0;z-index:3;font:700 10px/1 system-ui,sans-serif;color:#fff;background:rgba(11,42,51,.8);padding:2px 5px;border-radius:8px;pointer-events:none;white-space:nowrap";e.textContent=l.t;document.body.append(e);l.e=e;return l});
+const RM=matchMedia("(prefers-reduced-motion:reduce)").matches,ok=i=>!!tool&&phase==="build"&&(tool==="del"?!!slots[i]:!slots[i]);
+const G=[],pv3=new THREE.Vector3();
+function draw(i){if(G[i])S.remove(G[i]);G[i]=null;const t=slots[i];if(!t)return;
+const g=new THREE.Group(),p=PL[i];g.position.set(p.x,0,p.z);const b=(geo,c,x,y,z)=>{const m=new THREE.Mesh(geo,M(c));m.position.set(x,y,z);g.add(m)};
+if(t==="edu"){b(new THREE.CylinderGeometry(.05,.05,1,5),0x7c5a3a,0,.5,0);b(new THREE.BoxGeometry(1.2,.7,.1),0xf8fafc,0,1.1,0);b(new THREE.ConeGeometry(.25,.4,6),0x22c55e,0,1.1,.1)}
+if(t==="con"){b(new THREE.CylinderGeometry(.6,.6,.12,14),0xb45309,0,.5,0);b(new THREE.CylinderGeometry(.08,.08,.5,5),0x7c5a3a,0,.25,0);[[-.8,0],[.8,0]].forEach(([x,z])=>b(new THREE.BoxGeometry(.35,.3,.35),0x2563eb,x,.2,z))}
+if(t==="dat"){b(new THREE.CylinderGeometry(.3,.3,.5,10),0xfacc15,0,.25,0);b(new THREE.CylinderGeometry(.04,.04,1.2,5),0x6b7280,0,1.0,0);b(new THREE.SphereGeometry(.15,8,6),0xef4444,0,1.7,0)}
+if(t==="coi"){[0,.18,.36].forEach((y,k)=>b(new THREE.CylinderGeometry(.5-.05*k,.5-.05*k,.16,12),0xf59e0b,0,.1+y,0));b(new THREE.ConeGeometry(.25,.6,6),0x22c55e,0,.95,0)}
+if(t==="ben"){b(new THREE.CylinderGeometry(.9,.9,.08,16),0xe5e7eb,0,.06,0);b(new THREE.CylinderGeometry(.05,.05,1.5,5),0x6b7280,.5,.8,0);b(new THREE.SphereGeometry(.2,8,6),0xfde047,.5,1.6,0);b(new THREE.BoxGeometry(.9,.15,.3),0x7c5a3a,-.3,.25,.1)}
+S.add(g);G[i]=g}
+function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-pv)/1000||0);pv=ts;
+if(phase==="asamblea"){const el=(ts-t0)/1000,s=el<1.6?0:el<4.8?1:el<8?2:3,m=Math.min(3,Math.floor(el/3.2)+1),k=s*10+m;
+if(k!==lastKey){lastKey=k;if(s!==stage){stage=s;setStage(s,ts/1000)}epUpdate(m)}
+if(el>10.4)finishAsamblea()}
+pj.scale.y+=(pjT-pj.scale.y)*Math.min(1,dt*3);
+crowd(ts/1000);birds(ts/1000);
+const pu=RM?.8:.5+.5*Math.sin(ts/170);
+mk.forEach((m,i)=>{const v=ok(i),a=slots[i],f=a?fv(a,i):0;m.material.color.setHex(v?0xfde047:a?(f===1?0x22c55e:f>.5?0xfacc15:0xef4444):0xffffff);m.material.opacity=v?.5+.5*pu:a?.45:.75;m.scale.setScalar(i===hov&&v?1.3:1);bm[i].material.opacity=v?.15+.4*pu:0});
+LB.forEach(l=>{pv3.set(l.x,0,l.z).project(cam);l.e.style.transform=\`translate(\${Math.max(48,Math.min(innerWidth-48,(pv3.x+1)/2*innerWidth))}px,\${(1-pv3.y)/2*innerHeight+l.dy}px) translate(-50%,0)\`});
+R.render(S,cam)}
+requestAnimationFrame(loop);
+const gh=$("#ghost");let d0=null,drag=null;
+function near(x,y){let b=-1,bd2=1e9;PL.forEach((p,i)=>{pv3.set(p.x,0,p.z).project(cam);const d=Math.hypot((pv3.x+1)/2*innerWidth-x,(1-pv3.y)/2*innerHeight-y);if(d<bd2){bd2=d;b=i}});return bd2<70?b:-1}
+function dragStart(e,k){drag=k;gh.textContent=TOOLS.find(x=>x[0]===k)[1];gh.hidden=false;dragMove(e)}
+function dragMove(e){const y=e.clientY-50;gh.style.left=e.clientX+"px";gh.style.top=y+"px";hov=near(e.clientX,y)}
+addEventListener("pointermove",e=>{if(drag)dragMove(e)});
+addEventListener("pointerup",e=>{if(!drag)return;const k=drag,y=e.clientY-50;drag=null;hov=-1;gh.hidden=true;if(y<$("#panel").getBoundingClientRect().top){const i=near(e.clientX,y);if(i>=0){tool=k;place(i)}else toast("Suéltala sobre un puesto que brilla")}});
+addEventListener("pointercancel",()=>{drag=null;gh.hidden=true;hov=-1});
+cv.addEventListener("pointerdown",e=>{d0=[e.clientX,e.clientY]});
+cv.addEventListener("pointerup",e=>{const q=d0;d0=null;if(!q||Math.hypot(e.clientX-q[0],e.clientY-q[1])>10)return;const i=near(e.clientX,e.clientY);if(i>=0)place(i)});
+function toast(t){const e=$("#toast");e.textContent=t;e.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.opacity=0,2400)}
+function hud(){$("#coins").textContent=\`🪙 \${coins} · 🧩 \${slots.filter(Boolean).length}/8\`;$("#ba").style.width=Mt.amb+"%";$("#bs").style.width=Mt.soc+"%";$("#be").style.width=Mt.eco+"%"}
+TOOLS.forEach(([k,e,n,c])=>{const b=document.createElement("button");b.className="t";b.id="t_"+k;b.innerHTML=\`<span>\${e}</span>\${n}<br>\${c?"🪙 "+c:"gratis"}\`;b.onpointerdown=ev=>{pick(k);if(phase==="build"&&k!=="del")dragStart(ev,k)};$("#tools").append(b)});
+function pick(k){if(phase!=="build")return;$("#tools").classList.remove("blink");tool=k;$("#hint").textContent=TOOLS.find(x=>x[0]===k)[4]+(k==="del"?"":" Arrástrala a un puesto de un actor que brille.");document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.id==="t_"+k))}
+function place(i){if(phase!=="build")return;if(!tool)return toast("Elige una acción abajo");
+if(tool==="del"){if(slots[i]){coins+=paid[i];slots[i]=null;paid[i]=0;draw(i);hud()}return}
+if(slots[i])return toast("Ocupado: usa 🗑️ para quitarla");
+const c=cost(tool);if(coins<c)return toast("No alcanzan las monedas");
+coins-=c;paid[i]=c;slots[i]=tool;draw(i);hud();const f=fv(tool,i),r=\`\${ACT[FIT[tool][0]].n} o \${ACT[FIT[tool][1]].n}\`;
+toast(f===1?\`✅ Buen rol para \${ACT[SA[i]].n}\`:f>.5?\`🟡 Funciona a medias: rinde más con \${r}\`:\`🔴 Poco efecto: rinde más con \${r}\`)}
+function scores(){const sc=[0,0,0,0],seen={};slots.forEach((a,i)=>{if(!a)return;const f=fv(a,i)*(seen[a]?.5:1);seen[a]=1;MX[a].forEach((m,j)=>sc[j]+=m*f)});return sc}
+const stances=(t,sc)=>C.map(c=>{const v=sc[c.t]*t/3;return v>=c.r?2:v>=c.r*.5?1:0});
+const cnt=v=>st.filter(x=>x===v).length;
+function setStage(s,t){const ns=stances(s,cc.sc);ns.forEach((v,i)=>{if(v!==st[i])C[i].pop=t});st=ns;paintC();pjT=.12+.88*cnt(2)/30}
+function epUpdate(m){const g=cnt(2),y=cnt(1),by=TY.map((t,j)=>C.filter((c,i)=>c.t===j&&st[i]===2).length);
+$("#eph").innerHTML=\`<span>🗳️ Reunión \${m} de 3</span><span>🟢 \${g} · 🟡 \${y} · 🔴 \${30-g-y}</span>\`;
+$("#epc").innerHTML=st.map(v=>\`<i style="background:\${SCH[v]}"></i>\`).join("");
+$("#eps").textContent=["Reunión 1: los vecinos escuchan las propuestas y hacen preguntas.","Reunión 2: se ven las acciones en marcha y la confianza cambia.","Reunión 3: llega la votación. Se necesita mayoría: 16 de 30."][m-1];
+$("#epn").textContent=TY.map((t,j)=>\`\${t.em} \${by[j]}/\${t.k}\`).join(" · ")+" apoyan"}
+function startAsamblea(){if(phase!=="build")return;phase="asamblea";round++;$("#panel").hidden=true;$("#ep").hidden=false;cc={sc:scores()};st=C.map(()=>0);paintC();stage=-1;lastKey=-1;pjT=.12;t0=performance.now()}
+function finishAsamblea(){phase="result";$("#ep").hidden=true;const g=cnt(2),y=cnt(1),r=30-g-y,ap=g>=16,has=k=>slots.includes(k)?1:0,cl=v=>Math.max(0,Math.min(100,Math.round(v)));
+Mt={amb:cl(30+25*has("dat")+20*has("edu")+15*has("con")+10*g/30),soc:cl(100*(g+.5*y)/30),eco:cl(30+coins/2+20*has("coi")+10*has("ben")+(ap?10:0))};hud();final={g,y,r,ap};
+const t=[\`🗳️ Votación final: 🟢 \${g} a favor, 🟡 \${y} dudosos y 🔴 \${r} en contra.\`,ap?"✅ El proyecto se aprueba con mayoría: la comunidad lo hizo suyo.":"❌ Sin mayoría (16 de 30) el proyecto no avanza. Sin confianza no hay proyecto."];
+TY.forEach((ty,j)=>{const n=C.filter((c,i)=>c.t===j&&st[i]===2).length;if(n<ty.k/2)t.push(\`\${ty.em} \${ty.n}: solo \${n} de \${ty.k} apoyan. Les ayudaría \${ty.rec}.\`)});
+slots.forEach((a,i)=>{if(a&&fv(a,i)<1)t.push(\`⚠️ \${RN[a]} con \${ACT[SA[i]].n} funcionó a medias; rinde más con \${ACT[FIT[a][0]].n} o \${ACT[FIT[a][1]].n}.\`)});
+show(\`<h2>🗳️ Asamblea \${round}/2</h2>\${t.map(x=>\`<p>\${x}</p>\`).join("")}<p><b>🌊 \${Mt.amb} · 🤝 \${Mt.soc} · 💰 \${Mt.eco}</b></p><button class="btn" id="nx">\${round<2?"Ajustar y convocar otra asamblea (+🪙 40)":"Ir al quiz final"}</button>\`);
+$("#nx").onclick=()=>{if(round<2){coins+=40;phase="build";sh.hidden=true;$("#panel").hidden=false;st=C.map(()=>0);paintC();pjT=.12;$("#hint").textContent="Ajusta las acciones y los actores para convencer a más vecinos.";$("#go").textContent="🗳️ Convocar asamblea (2/2)";hud()}else quiz()}}
+const sh=$("#sheet"),cd=$("#card");
+function show(h){cd.innerHTML=h;sh.hidden=false;cd.scrollTop=0}
+function learn(){const c=CARDS[ci],last=ci===CARDS.length-1;
+show(\`<div class="em">\${c.e}</div><h2>\${c.t}</h2><p>\${c.b}</p>\${c.s?\`<small>📖 \${c.s}</small>\`:""}<div class="dots">\${CARDS.map((_,k)=>\`<u class="\${k===ci?"on":""}"></u>\`).join("")}</div><button class="btn" id="nx">\${last?"¡A jugar!":"Siguiente"}</button>\`);
+$("#nx").onclick=()=>{if(last)startBuild();else{ci++;learn()}}}
+function startBuild(){phase="build";sh.hidden=true;$("#hud").hidden=false;$("#panel").hidden=false;$("#hint").textContent="① Toca una acción (parpadea). ② Arrástrala a un puesto de un actor que brille. ③ Convoca la asamblea.";$("#tools").classList.add("blink");tool=null;$("#go").textContent="🗳️ Convocar asamblea (1/2)";hud()}
+$("#go").onclick=startAsamblea;
+function quiz(){const q=Q[qi];ans=false;$("#hud").hidden=true;LB.forEach(l=>l.e.hidden=true);
+show(\`<small>Pregunta \${qi+1} de \${Q.length}</small><h2>\${q.q}</h2>\`+q.o.map((o,k)=>\`<button class="op" data-k="\${k}">\${o}</button>\`).join("")+\`<div id="fb"></div>\`);
+cd.querySelectorAll(".op").forEach(b=>b.onclick=()=>{if(ans)return;ans=true;const k=+b.dataset.k,okk=k===q.a;if(okk)qok++;
+cd.querySelectorAll(".op").forEach((x,j)=>{if(j===q.a)x.classList.add("ok");else if(j===k)x.classList.add("bad")});
+$("#fb").innerHTML=\`<p><b>\${okk?"✅ ¡Correcto!":"❌ No exactamente."}</b> \${q.e}</p><small>📖 \${q.s}</small><button class="btn" id="nx">\${qi<Q.length-1?"Siguiente":"Ver mi resultado"}</button>\`;
+$("#nx").onclick=()=>{qi++;if(qi<Q.length)quiz();else end()}})}
+function end(){const pbr=Math.round((Mt.amb+Mt.soc+Mt.eco)/3*.4)+15*qok;
+if(window.parent && window.parent.postMessage){
+    window.parent.postMessage({ juegoId: 'gobernanza', pbr: pbr, amb: Mt.amb, soc: Mt.soc, eco: Mt.eco, quiz: qok }, '*');
+}
+const mt=ACT.map((a,ai)=>\`\${a.e} \${a.n}: \${slots.map((x,i)=>x&&SA[i]===ai?RN[x]:"").filter(Boolean).join(", ")||"sin rol asignado"}\`);
+const msg=pbr>=80?"Pacto logrado: la confianza se construye con roles claros para cada actor.":pbr>=50?"Buen avance. Revisa qué actor debería liderar cada acción para convencer a más vecinos.":"El pacto aún no convence. Prueba otra combinación de acciones y actores.";
+show(\`<div class="em">🏆</div><h2>\${pbr} de 100 PBR</h2><p>\${msg}</p><p><b>Matriz de Actores Clave</b></p>\${mt.map(x=>\`<p>\${x}</p>\`).join("")}<div class="code">GOBERNANZA | PBR \${pbr}/100 | Amb \${Mt.amb} Soc \${Mt.soc} Eco \${Mt.eco} | Quiz \${qok}/\${Q.length} | Votos a favor \${final?final.g:0}/30 | \${mt.join(" ; ")}</div><small>¡Excelente! Tu progreso se ha enviado al Menú Principal.</small><button class="btn" id="nx">Jugar de nuevo</button>\`);
+$("#nx").onclick=()=>location.reload()}
+learn();
+<\/script></body></html>`
+            },
+            aburra: {
+                id: 'aburra',
+                title: 'Nivel Aburrá',
+                subtitle: 'El valle que respira · Antioquia',
+                emoji: '🐦',
+                location: 'Valle de Aburrá (10 Municipios)',
+                desc: 'Coordina estrategias entre los 10 municipios para frenar las emergencias por contaminación PM2.5.',
+                code: `<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El valle que respira · Nivel Aburrá</title>
+<style>
+:root{--bg:#e6f2f1;--card:#fff;--ink:#0b2a33;--mut:#4a6670;--acc:#0b7285;--onacc:#fff;--line:#bcd7d9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}}
+:root[data-theme="dark"]{--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 ui-rounded,"Avenir Next","Trebuchet MS",system-ui,sans-serif;overflow:hidden;touch-action:manipulation}
+[hidden]{display:none!important}
+#ep{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px))}
+#eph{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:15px}
+#eps{font-size:13px;color:var(--mut);min-height:38px;margin-top:4px}
+#epc{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;margin:6px 0}
+#epc i{height:16px;border-radius:3px;background:var(--line)}
+#epc i.cur{outline:2px solid var(--ink);outline-offset:1px}
+#epn{font-size:12px;color:var(--mut)}
+.chips span{display:inline-block;margin:3px 4px 0 0;padding:3px 7px;border-radius:10px;background:var(--bg);font-size:12px;border:1px solid var(--line)}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;z-index:2;display:flex;gap:8px;align-items:center;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 14px;background:linear-gradient(var(--bg) 40%,transparent)}
+.m{flex:1;font-size:11px;font-weight:700}
+.m i{display:block;height:8px;border-radius:4px;background:var(--line);margin-top:3px;overflow:hidden}
+.m b{display:block;height:100%;width:0;transition:width .6s}
+#coins{font-weight:800;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px 9px;white-space:nowrap}
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+#hint{font-size:13px;color:var(--mut);min-height:38px}
+#tools{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:8px 0 10px}
+.t{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:6px 0;font:600 10px/1.2 inherit;font-family:inherit}
+.t span{display:block;font-size:20px}
+.t.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.t{touch-action:none;user-select:none;-webkit-user-select:none}
+#tools.blink .t{animation:bl 1.1s ease-in-out infinite}
+@keyframes bl{50%{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc)}}
+#ghost{position:fixed;z-index:7;font-size:40px;line-height:1;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+@media(prefers-reduced-motion:reduce){#tools.blink .t{animation:none;border-color:var(--acc)}}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;margin-top:12px;font:700 16px inherit;font-family:inherit;background:var(--acc);color:var(--onacc)}
+#panel .btn{margin-top:0}
+#sheet{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,20,25,.5)}
+#card{width:100%;max-width:520px;max-height:90%;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+#card h2{margin:4px 0 8px;font-size:21px;line-height:1.2}
+#card p{margin:8px 0;font-size:16px}
+#card small{color:var(--mut);display:block;margin-top:6px}
+.em{font-size:44px;line-height:1}
+.dots{display:flex;gap:6px;margin-top:14px}
+.dots u{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots u.on{background:var(--acc);width:22px;border-radius:4px}
+.op{display:block;width:100%;text-align:left;margin-top:8px;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:15px/1.35 inherit;font-family:inherit}
+.op.ok{border-color:#16a34a;background:rgba(22,163,74,.18)}
+.op.bad{border-color:#dc2626;background:rgba(220,38,38,.16)}
+.code{margin-top:10px;padding:10px;border-radius:10px;background:var(--bg);border:1px dashed var(--acc);font:13px/1.4 ui-monospace,monospace;user-select:all;word-break:break-word}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:6;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;text-align:center}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud" hidden>
+<div class="m">🌊 Ambiente<i><b id="ba" style="background:#0ea5e9"></b></i></div>
+<div class="m">🤝 Sociedad<i><b id="bs" style="background:#f59e0b"></b></i></div>
+<div class="m">💰 Economía<i><b id="be" style="background:#16a34a"></b></i></div>
+<div id="coins">🪙 100</div></div>
+<div id="panel" hidden><div id="hint"></div><div id="tools"></div><button class="btn" id="go"></button></div>
+<div id="ghost" hidden></div>
+<div id="ep" hidden><div id="eph"></div><div id="epc"></div><div id="eps"></div><div id="epn"></div></div>
+<div id="toast"></div>
+<div id="sheet"><div id="card"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script>
+const $=s=>document.querySelector(s);
+const CARDS=[
+{e:"🐦",t:"Hola, soy Colibrí",b:"Vuelo sobre el Valle de Aburrá, en Antioquia. Tu equipo hará de Junta Metropolitana: tendrás que cuidar el aire del valle trabajando con los 10 municipios. Te cuento qué dice el libro guía.",s:""},
+{e:"🏔️",t:"Un valle largo y estrecho",b:"El Valle de Aburrá tiene 10 municipios y cerca de 3,8 millones de habitantes, el 60 % de Antioquia, en solo 1.157 km² (menos del 2 % del departamento). Mide unos 72 km de largo: unos 7 km de ancho en la parte plana de Medellín y menos de 1 km en los extremos. El río Aburrá lo atraviesa. El 85 % de la gente vive en zona urbana.",s:"Libro guía, p. 140"},
+{e:"🍽️",t:"Depende de sus vecinos",b:"El valle solo produce el 3 % de los alimentos que demanda, y el 70 % del agua que usa viene de fuera de su jurisdicción. Esa agua además genera más de la mitad de su energía. Al mismo tiempo, concentra el 65,3 % del PIB de Antioquia. Su capacidad de carga apenas alcanza para una mínima parte de lo que consume.",s:"Libro guía, p. 141"},
+{e:"😷",t:"El aire se queda en el valle",b:"El crecimiento acelerado de la población y los fenómenos del cambio climático han deteriorado la calidad del aire. El libro menciona la proliferación de vehículos privados y la industria contaminante como parte del problema, y señala que influyen las condiciones geomorfológicas del valle y la variabilidad climática, como la transición de la época de lluvias a la seca.",s:"Libro guía, pp. 140-143"},
+{e:"🤝",t:"Gobernar juntos",b:"El Área Metropolitana apuesta por la planeación estratégica y la gobernanza: participación y diálogo entre todos los actores (sector público y privado, empresarios, academia, colectivos sociales y ciudadanía). Las decisiones se toman por consenso, con criterios técnicos y científicos y con equidad. Para completar el mapa de 10 municipios, Envigado volvió al Área Metropolitana: era imposible planificar con “una ficha clave por fuera del mapa”.",s:"Libro guía, pp. 141-142"},
+{e:"🛠️",t:"Las herramientas",b:"El PIGECA (adoptado en 2017, el primero del país) es la hoja de ruta para mejorar la calidad del aire. El protocolo POECA (aprobado en 2018) se activa cuando SIATA, un sistema de alerta temprana, detecta o pronostica niveles altos: puede declarar estado de prevención o alerta en etapas I, II o III. Su plan tiene 5 ejes: movilidad sostenible, producción limpia y consumo responsable, cultura ciudadana, comunicación pública y ordenamiento territorial sostenible.",s:"Libro guía, p. 143"},
+{e:"📉",t:"Los resultados",b:"Más de 66 empresas, transportadores, la academia y la ciudadanía firmaron el Pacto por la Calidad del Aire. En 2016 el valle estuvo 23 días seguidos en alerta por PM2.5. En 2017, con el protocolo y el PIGECA, hubo 4 días de prevención y menos de 2 de alerta roja fase I. El libro lo presenta como prueba de la eficacia de actuar articulados.",s:"Libro guía, p. 143"},
+{e:"🎯",t:"Tu misión",b:"Tienes 100 monedas. Arrastra medidas a los municipios (de sur a norte, abajo hacia arriba). Cada municipio admite una medida. El humo viaja por el valle: el aire de tus vecinos también es tuyo. Envigado empieza fuera del pacto: integrarlo cuesta +10. Con 6 municipios sumados hay consenso y las medidas rinden 25 % más. Luego simulamos 30 días de transición a la época seca. Los círculos de humo te muestran el estado del aire.",s:""}];
+const TOOLS=[
+["mov","🚇","Movilidad",25,"Movilidad sostenible (metro, tranvía, metrocable): baja 40 % las emisiones del municipio."],
+["pro","🏭","Prod. limpia",25,"Producción limpia y consumo responsable: baja 35 % las emisiones."],
+["cul","🤝","Cultura",15,"Cultura ciudadana: baja 20 %. Es barata, pero más débil."],
+["ord","🗺️","Ordenam.",20,"Ordenamiento territorial sostenible: baja 15 % y protege la estructura ecológica."],
+["ala","📡","SIATA",20,"Alerta temprana y comunicación pública: activa el protocolo POECA, recorta 12 % los picos del episodio y baja 15 % las emisiones locales."],
+["del","🗑️","Quitar",0,"Toca un municipio con medida para retirarla y recuperar sus monedas."]];
+const Q=[
+{q:"¿Qué parte de los alimentos que demanda produce el Valle de Aburrá, y qué implica?",o:["Cerca del 30 %; es casi autosuficiente","Cerca del 60 %; exporta alimentos al resto del país","Solo el 3 %; depende de la oferta ambiental de regiones vecinas","Cerca del 15 %; solo compra frutas de fuera"],a:2,e:"El valle produce solo el 3 % de los alimentos que demanda y el 70 % de su agua viene de fuera, por lo que depende de la oferta ambiental de otras regiones.",s:"Libro guía, p. 141"},
+{q:"¿Qué cambió entre 2016 y 2017 en los días de alerta por PM2.5?",o:["De 23 días seguidos de alerta a 4 de prevención y menos de 2 de alerta roja, con el PIGECA, el protocolo y el Pacto por la Calidad del Aire","Aumentaron, porque creció el parque automotor","No cambiaron, porque el clima decide todo","Bajaron solo porque llovió más en 2017"],a:0,e:"El libro presenta el contraste como prueba de la eficacia de las decisiones articuladas entre todos los actores.",s:"Libro guía, p. 143"},
+{q:"¿Cómo toma decisiones el Área Metropolitana del Valle de Aburrá?",o:["Las decide solo el alcalde de Medellín","Las votan las empresas privadas","Cada municipio decide por su cuenta, sin coordinar","Por consenso entre los actores, con criterios técnicos y científicos y principios de equidad"],a:3,e:"El libro destaca la participación y el diálogo entre todos los actores y decisiones por consenso con base técnica y científica, buscando reducir asimetrías entre Medellín y los demás municipios.",s:"Libro guía, p. 141"},
+{q:"¿Por qué fue importante que Envigado regresara al Área Metropolitana?",o:["Porque tiene la mayor industria del país","Porque era imposible planificar y articular el valle con una ficha clave por fuera del mapa","Porque la ley obliga a todos los municipios a asociarse","Porque así desaparecen los alcaldes locales"],a:1,e:"Con Envigado dentro se completó el mapa de los 10 municipios, necesario para planificar y articular un territorio con problemas y oportunidades comunes.",s:"Libro guía, p. 142"}];
+const NM=["Caldas","La Estrella","Sabaneta","Envigado","Itagüí","Medellín","Bello","Copacabana","Girardota","Barbosa"],E=[3,4,5,6,7,10,7,4,3,2],RED={mov:.4,pro:.35,cul:.2,ord:.15,ala:.15};
+const PL=NM.map((n,i)=>({x:i%2?2:-2,z:9.5-2.1*i,n}));
+const cost=k=>TOOLS.find(x=>x[0]===k)[3];
+const SC=[0x22c55e,0xfacc15,0xf97316,0xdc2626],SO=[.18,.34,.5,.62],stat=v=>v>55?3:v>40?2:v>30?1:0;
+const DF=Array.from({length:30},(_,d)=>d>=5&&d<=27?1.35+.08*Math.sin(d*2.3):.85+.15*Math.sin(d));
+let coins=100,tool=null,slots=Array(10).fill(null),paid=Array(10).fill(0),round=0,phase="learn",ci=0,qi=0,qok=0,ans=false,Mt={amb:0,soc:0,eco:0},cc=null,days=[],dayShown=-1,t0=0,pv=0,hov=-1,nCars=30;
+function calc(){const n=slots.filter(Boolean).length,q=n>=6?1.25:1;
+const r=E.map((e,i)=>slots[i]?e*(1-Math.min(.85,RED[slots[i]]*q)):e);
+const pm=r.map((v,i)=>(v+.3*((r[i-1]||0)+(r[i+1]||0)))*4);
+return{n,q,r,pm,mean:pm.reduce((a,b)=>a+b,0)/10,ala:slots.includes("ala")}}
+const ef=(d,ala)=>DF[d]>1.2&&ala?DF[d]*.88:DF[d];
+const BASE=E.map((v,i,r)=>(v+.3*((r[i-1]||0)+(r[i+1]||0)))*4),BM=BASE.reduce((a,b)=>a+b,0)/10,EM=["🟢","🟡","🟠","🔴"],SCH=["#22c55e","#facc15","#f97316","#dc2626"],BG=["#15803d","#a16207","#c2410c","#b91c1c"],DUR=.45;
+const cv=$("#c"),R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new THREE.Scene();S.background=new THREE.Color(0xcfe6f0);
+const cam=new THREE.PerspectiveCamera(48,1,.1,140);
+function fit(){const W=innerWidth,H=innerHeight;R.setSize(W,H,false);cam.aspect=W/H;const p=W<H;cam.position.set(0,p?30:36,p?20:26);cam.lookAt(0,0,p?0:1);
+const top=64,bot=Math.min(250,H*.34),yc=top+(H-top-bot)/2;cam.setViewOffset(W,H,0,Math.round(H/2-yc),W,H);cam.updateProjectionMatrix()}
+addEventListener("resize",fit);fit();
+S.add(new THREE.HemisphereLight(0xffffff,0x5b7f4d,.95));const dl=new THREE.DirectionalLight(0xffffff,.5);dl.position.set(6,12,5);S.add(dl);
+const M=c=>new THREE.MeshLambertMaterial({color:c});
+const add=(g,c,x,y,z,rx)=>{const m=new THREE.Mesh(g,M(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;S.add(m);return m};
+add(new THREE.PlaneGeometry(70,70),0x7fae6a,0,0,0,-Math.PI/2);
+add(new THREE.PlaneGeometry(8.6,30),0xb9d9a0,0,.01,0,-Math.PI/2);
+add(new THREE.PlaneGeometry(.9,30),0x3b9ed8,0,.03,0,-Math.PI/2);
+add(new THREE.BoxGeometry(.3,.12,30),0x6b7280,0,.9,0);
+[-1,1].forEach(s=>{add(new THREE.BoxGeometry(6,.2,30),0x5f9a52,s*6.83,1.44,0).rotation.z=s*.5});
+let sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+const D=new THREE.Object3D(),col=new THREE.Color();
+function inst(geo,n,f){const m=new THREE.InstancedMesh(geo,M(0xffffff),n);m.frustumCulled=false;for(let i=0;i<n;i++){D.position.set(0,0,0);D.rotation.set(0,0,0);D.scale.set(1,1,1);const c=f(i,D);D.updateMatrix();m.setMatrixAt(i,D.matrix);m.setColorAt(i,col.setHex(c))}S.add(m);return m}
+const fr=(x,z,d)=>PL.every(p=>Math.hypot(p.x-x,p.z-z)>d);
+const MT=[];for(let i=0;i<28;i++)MT.push({x:(i%2?1:-1)*(11+rnd()*4),z:-14+rnd()*28,h:4+rnd()*4,r:3+rnd()*2});
+inst(new THREE.ConeGeometry(1,1,7),MT.length,(i,d)=>{const m=MT[i];d.position.set(m.x,m.h/2,m.z);d.scale.set(m.r,m.h,m.r);return[0x3f7d3a,0x4a8c44,0x356a31][i%3]});
+const HL=[];for(let i=0;i<110;i++){const sg=rnd()<.5?-1:1,s=.2+rnd()*4.2;HL.push({sg,x:sg*(4.4+s*Math.cos(.5)),y:s*Math.sin(.5)+.28,z:-13+rnd()*26})}
+const HC=[0xf8d6a5,0xe9a9a1,0xa7d3e8,0xf3e79b,0xc7b5e6,0xbfe0b4];
+inst(new THREE.BoxGeometry(.55,.45,.55),HL.length,(i,d)=>{const h=HL[i];d.position.set(h.x,h.y,h.z);d.rotation.z=h.sg*.5;return HC[i%6]});
+const B=[];for(let t=0;t<1500&&B.length<70;t++){const x=-4+rnd()*8,z=-13+rnd()*26;if(Math.abs(x)>1.4&&fr(x,z,1.8)&&B.every(b=>Math.hypot(b.x-x,b.z-z)>.95))B.push({x,z,h:.5+2.3*Math.exp(-z*z/60)*rnd()+rnd()*.4})}
+inst(new THREE.BoxGeometry(1,1,1),B.length,(i,d)=>{const b=B[i];d.position.set(b.x,b.h/2,b.z);d.scale.set(.8,b.h,.8);return[0x9fb4c7,0xb8c4d0,0x8aa1b5,0xc9d3dc][i%4]});
+const P=[];for(let t=0;t<2000&&P.length<28;t++){const x=-4+rnd()*8,z=-13+rnd()*26;if(Math.abs(x)>1.3&&fr(x,z,1.8)&&B.every(b=>Math.hypot(b.x-x,b.z-z)>.9))P.push({x,z,a:rnd()*6.28,r:.4+rnd()*.7,v:.6+rnd()*.8,ph:rnd()*6.28,c:[0xe11d48,0x2563eb,0xf59e0b,0x7c3aed,0x059669,0xf97316][P.length%6]})}
+const pb=inst(new THREE.CylinderGeometry(.1,.13,.42,6),P.length,(i,d)=>{d.position.set(P[i].x,.38,P[i].z);return P[i].c}),ph=inst(new THREE.SphereGeometry(.12,6,5),P.length,(i,d)=>{d.position.set(P[i].x,.97,P[i].z);return 0xf2c9a0});
+function walk(t){P.forEach((p,i)=>{const s=Math.sin(t*p.v+p.ph),b=Math.abs(Math.sin(t*6*p.v+i))*.05;D.rotation.set(0,0,0);D.scale.setScalar(1.8);D.position.set(p.x+Math.cos(p.a)*p.r*s,.38+b,p.z+Math.sin(p.a)*p.r*s);D.updateMatrix();pb.setMatrixAt(i,D.matrix);D.position.y=.97+b;D.updateMatrix();ph.setMatrixAt(i,D.matrix)});pb.instanceMatrix.needsUpdate=ph.instanceMatrix.needsUpdate=true}
+const cars=Array.from({length:30},(_,i)=>({d:i%2?1:-1,x:i%2?.95:-.95,z:-14+rnd()*28,v:.8+rnd()*1.2})),cm=inst(new THREE.BoxGeometry(.3,.2,.55),30,i=>[0xef4444,0x3b82f6,0xf8fafc,0xfacc15][i%4]);
+const mk=PL.map((p,i)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.95,.95,.12,28),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.75}));m.position.set(p.x,.14,p.z);S.add(m);return m});
+const bm=PL.map(p=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,4,12,1,true),new THREE.MeshBasicMaterial({color:0xfde047,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));m.position.set(p.x,2,p.z);S.add(m);return m});
+const cl2=PL.map(p=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,5,16,1,true),new THREE.MeshBasicMaterial({color:0x22c55e,transparent:true,opacity:.15,side:THREE.DoubleSide,depthWrite:false}));m.position.set(p.x,2.6,p.z);S.add(m);return m});
+const hz=new THREE.Mesh(new THREE.PlaneGeometry(14,32),new THREE.MeshBasicMaterial({color:0x8b6b3d,transparent:true,opacity:0,depthWrite:false}));hz.rotation.x=-Math.PI/2;hz.position.y=4.8;S.add(hz);
+const NP=14,sp=new Float32Array(10*NP*3),sc=new Float32Array(10*NP*3),sg=new THREE.BufferGeometry(),sf=Array(10).fill(0),spd=Array.from({length:10*NP},()=>({o:rnd(),dx:(rnd()-.5)*1.8,dz:(rnd()-.5)*1.8}));
+sg.setAttribute("position",new THREE.BufferAttribute(sp,3));sg.setAttribute("color",new THREE.BufferAttribute(sc,3));
+const sm=new THREE.Points(sg,new THREE.PointsMaterial({size:.6,vertexColors:true,transparent:true,opacity:.75,depthWrite:false}));sm.frustumCulled=false;S.add(sm);
+const lb=PL.map(p=>{const e=document.createElement("div");e.style.cssText="position:fixed;left:0;top:0;z-index:3;font:700 10px/1 system-ui,sans-serif;color:#fff;background:rgba(11,42,51,.8);padding:2px 5px;border-radius:8px;pointer-events:none;white-space:nowrap";e.textContent=p.n;document.body.append(e);return e});
+const RM=matchMedia("(prefers-reduced-motion:reduce)").matches,ok=i=>!!tool&&phase==="build"&&(tool==="del"?!!slots[i]:!slots[i]);
+const G=[],pv3=new THREE.Vector3();
+function draw(i){if(G[i])S.remove(G[i]);G[i]=null;const t=slots[i];if(!t)return;
+const g=new THREE.Group(),p=PL[i];g.position.set(p.x,0,p.z);
+const b=(geo,c,x,y,z)=>{const m=new THREE.Mesh(geo,M(c));m.position.set(x,y,z);g.add(m)};
+if(t==="mov"){b(new THREE.BoxGeometry(.5,.45,1.5),0x2563eb,0,.35,0);b(new THREE.BoxGeometry(.52,.15,1.52),0xf8fafc,0,.45,0);b(new THREE.CylinderGeometry(.04,.04,1.6,5),0x6b7280,.45,1,0)}
+if(t==="pro"){b(new THREE.BoxGeometry(1.2,.7,.9),0x94a3b8,0,.35,0);b(new THREE.CylinderGeometry(.14,.18,.9,8),0x64748b,.4,1.1,0);b(new THREE.ConeGeometry(.35,.5,6),0x22c55e,-.3,.95,0)}
+if(t==="cul"){b(new THREE.CylinderGeometry(.05,.05,1,5),0x7c5a3a,0,.5,0);b(new THREE.BoxGeometry(1.4,.7,.1),0xfacc15,0,1.1,0)}
+if(t==="ord"){b(new THREE.CylinderGeometry(.9,.9,.08,16),0x6bbf59,0,.06,0);[[-.4,.2],[.4,-.2],[0,.5]].forEach(([x,z])=>b(new THREE.IcosahedronGeometry(.35,0),0x2f9e44,x,.5,z))}
+if(t==="ala"){b(new THREE.CylinderGeometry(.05,.07,2,6),0x6b7280,0,1,0);b(new THREE.SphereGeometry(.18,8,6),0xef4444,0,2.1,0);b(new THREE.ConeGeometry(.4,.3,8),0xe5e7eb,.3,1.4,0)}
+S.add(g);G[i]=g}
+function paint(c,f){c.pm.forEach((v,i)=>{const s=stat(v*f);cl2[i].material.color.setHex(SC[s]);cl2[i].material.opacity=SO[s];sf[i]=Math.max(0,Math.min(1,(v*f-12)/55));col.setHex(SC[s]);for(let k=0;k<NP;k++){const j=(i*NP+k)*3;sc[j]=col.r;sc[j+1]=col.g;sc[j+2]=col.b}});sg.attributes.color.needsUpdate=true;hz.material.opacity=Math.max(0,Math.min(.5,(c.mean*f-18)/70));nCars=6+Math.round(24*c.r.reduce((a,b)=>a+b,0)/51)}
+function smoke(t){for(let i=0;i<10;i++){const n=Math.round(sf[i]*NP);for(let k=0;k<NP;k++){const j=(i*NP+k)*3,q=spd[i*NP+k],u=(t*.3+q.o)%1;if(k<n){sp[j]=PL[i].x+q.dx*(.3+u);sp[j+1]=.4+u*5;sp[j+2]=PL[i].z+q.dz*(.3+u)}else sp[j+1]=-60}}sg.attributes.position.needsUpdate=true}
+function epDay(d){const f=ef(d,cc.ala),k=days[d],s=k.s;paint(cc,f);
+lb.forEach((e,i)=>{const v=cc.pm[i]*f,dl=Math.round(BASE[i]*f-v),st=stat(v);e.textContent=\`\${NM[i]} \${Math.round(v)}\${dl>0?" ▼"+dl:""} \${EM[st]}\`;e.style.background=BG[st]});
+const al=days.slice(0,d+1).filter(x=>x.s>=2).length,pr=days.slice(0,d+1).filter(x=>x.s===1).length,sea=d>=5&&d<28;
+$("#eph").innerHTML=\`<span>📅 Día \${d+1} de 30</span><span>\${EM[s]} \${["Aire aceptable","Prevención","Alerta etapa I","Alerta etapa II"][s]}</span>\`;
+$("#epc").innerHTML=days.map((x,j)=>\`<i class="\${j===d?"cur":""}" style="\${j<=d?"background:"+SCH[x.s]:""}"></i>\`).join("");
+$("#eps").textContent=(d<5?"🌧️ Época de lluvias: el agua limpia el aire.":sea?"☀️ Transición a la época seca: el humo se estanca en el valle.":"🌧️ Regresan las lluvias y el aire mejora.")+(s>=2?" ⚠️ Niveles de PM2.5 sobre la norma."+(cc.ala?" 📡 SIATA activó el protocolo POECA.":""):sea?(s===1?" 🟡 Estado de prevención.":" ✅ Tus medidas mantienen el aire aceptable."):"");
+$("#epn").textContent=\`🔴 Días en alerta: \${al} · 🟡 En prevención: \${pr} · Racha de alerta: \${k.streak} (2016: 23 seguidos)\`}
+function loop(ts){requestAnimationFrame(loop);const dt=Math.min(.05,(ts-pv)/1000||0);pv=ts;
+if(phase==="episode"){const el=(ts-t0)/1000,d=Math.min(29,Math.floor(el/DUR));
+if(d!==dayShown){dayShown=d;epDay(d)}
+if(el>31*DUR)finishEpisode()}
+walk(ts/1000);smoke(ts/1000);
+cars.forEach((c,i)=>{c.z+=c.v*dt*c.d;if(c.z>14)c.z=-14;if(c.z<-14)c.z=14;D.rotation.set(0,0,0);D.scale.setScalar(i<nCars?1:.001);D.position.set(c.x,.15,c.z);D.updateMatrix();cm.setMatrixAt(i,D.matrix)});cm.instanceMatrix.needsUpdate=true;
+const pu=RM?.8:.5+.5*Math.sin(ts/170);
+mk.forEach((m,i)=>{const v=ok(i);m.material.color.setHex(v?0xfde047:i===3&&!slots[3]?0x9ca3af:0xffffff);m.material.opacity=v?.5+.5*pu:slots[i]?.3:.75;m.scale.setScalar(i===hov&&v?1.3:1);bm[i].material.opacity=v?.15+.4*pu:0;
+pv3.set(PL[i].x,0,PL[i].z).project(cam);lb[i].style.transform=\`translate(\${(pv3.x+1)/2*innerWidth}px,\${(1-pv3.y)/2*innerHeight+20}px) translate(-50%,0)\`});
+R.render(S,cam)}
+requestAnimationFrame(loop);
+const gh=$("#ghost");let d0=null,drag=null;
+function near(x,y){let b=-1,bd=1e9;PL.forEach((p,i)=>{pv3.set(p.x,0,p.z).project(cam);const d=Math.hypot((pv3.x+1)/2*innerWidth-x,(1-pv3.y)/2*innerHeight-y);if(d<bd){bd=d;b=i}});return bd<70?b:-1}
+function dragStart(e,k){drag=k;gh.textContent=TOOLS.find(x=>x[0]===k)[1];gh.hidden=false;dragMove(e)}
+function dragMove(e){const y=e.clientY-50;gh.style.left=e.clientX+"px";gh.style.top=y+"px";hov=near(e.clientX,y)}
+addEventListener("pointermove",e=>{if(drag)dragMove(e)});
+addEventListener("pointerup",e=>{if(!drag)return;const k=drag,y=e.clientY-50;drag=null;hov=-1;gh.hidden=true;if(y<$("#panel").getBoundingClientRect().top){const i=near(e.clientX,y);if(i>=0){tool=k;place(i)}else toast("Suéltala sobre un municipio que brilla")}});
+addEventListener("pointercancel",()=>{drag=null;gh.hidden=true;hov=-1});
+cv.addEventListener("pointerdown",e=>{d0=[e.clientX,e.clientY]});
+cv.addEventListener("pointerup",e=>{const q=d0;d0=null;if(!q||Math.hypot(e.clientX-q[0],e.clientY-q[1])>10)return;const i=near(e.clientX,e.clientY);if(i>=0)place(i)});
+function toast(t){const e=$("#toast");e.textContent=t;e.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.opacity=0,2200)}
+function hud(){$("#coins").textContent=\`🪙 \${coins} · 🏛️ \${slots.filter(Boolean).length}/10\`;$("#ba").style.width=Mt.amb+"%";$("#bs").style.width=Mt.soc+"%";$("#be").style.width=Mt.eco+"%";if(phase==="build"){lb.forEach((e,i)=>{e.textContent=i===3&&!slots[3]?"Envigado (fuera)":NM[i];e.style.background="rgba(11,42,51,.8)"});paint(calc(),1)}}
+TOOLS.forEach(([k,e,n,c])=>{const b=document.createElement("button");b.className="t";b.id="t_"+k;b.innerHTML=\`<span>\${e}</span>\${n}<br>\${c?"🪙 "+c:"gratis"}\`;b.onpointerdown=ev=>{pick(k);if(phase==="build"&&k!=="del")dragStart(ev,k)};$("#tools").append(b)});
+function pick(k){if(phase!=="build")return;$("#tools").classList.remove("blink");tool=k;$("#hint").textContent=TOOLS.find(x=>x[0]===k)[4]+(k==="del"?"":" Arrástrala a un municipio que brille.");document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.id==="t_"+k))}
+function place(i){if(phase!=="build")return;if(!tool)return toast("Elige una medida abajo");
+if(tool==="del"){if(slots[i]){coins+=paid[i];slots[i]=null;paid[i]=0;draw(i);hud()}return}
+if(slots[i])return toast("Ocupado: usa 🗑️ para quitarlo");
+const c=cost(tool)+(i===3?10:0);if(coins<c)return toast("No alcanzan las monedas");
+coins-=c;paid[i]=c;slots[i]=tool;draw(i);hud();
+if(i===3)toast("🏛️ Envigado se integra al pacto (+🪙 10 por el diálogo)");else if(slots.filter(Boolean).length===6)toast("🤝 ¡Consenso! Las medidas rinden 25 % más")}
+function startEpisode(){if(phase!=="build")return;phase="episode";round++;$("#panel").hidden=true;$("#ep").hidden=false;cc=calc();dayShown=-1;let st=0;
+days=DF.map((_,d)=>{const f=ef(d,cc.ala),s=stat(cc.mean*f);st=s>=2?st+1:0;return{s,streak:st}});t0=performance.now()}
+function finishEpisode(){phase="result";$("#ep").hidden=true;const al=days.filter(d=>d.s>=2).length,pr=days.filter(d=>d.s===1).length,mx=Math.max(...days.map(d=>d.streak)),n=cc.n;
+const cl=v=>Math.max(0,Math.min(100,Math.round(v))),has=k=>slots.includes(k)?1:0;
+Mt={amb:cl(100-2.2*al-pr),soc:cl(20+7*n+12*has("cul")+8*has("ala")-12*(slots[3]?0:1)),eco:cl(30+coins/2+10*has("pro")+10*has("mov")+(cc.q>1?6:0))};hud();
+const wi=cc.pm.indexOf(Math.max(...cc.pm)),t=[\`En 30 días de transición a la época seca: \${al} días en alerta (racha máxima: \${mx}) y \${pr} en prevención.\`,
+"Referencia del libro: en 2016 hubo 23 días seguidos de alerta; en 2017, 4 de prevención y menos de 2 de alerta roja (p. 143).",
+\`🏛️ Municipios sumados: \${n}/10. \${n>=6?"Hubo consenso: las medidas rindieron 25 % más.":"Faltó consenso: con 6 municipios las medidas rinden 25 % más."}\`];
+if(!slots[3])t.push("Envigado quedó fuera del pacto: su aire también llega a sus vecinos (p. 142).");
+t.push(\`😷 El municipio más afectado fue \${NM[wi]}.\`);
+if(cc.ala)t.push("📡 SIATA activó el protocolo POECA y recortó los picos del episodio.");
+show(\`<h2>📅 Episodio \${round}/2</h2>\${t.map(x=>\`<p>\${x}</p>\`).join("")}<p>📊 Aire promedio del valle en pleno episodio: \${Math.round(BM*1.35)} sin medidas → \${Math.round(cc.mean*1.35)} con tus medidas. Por municipio (sin medidas → con medidas):</p><div class="chips">\${cc.pm.map((v,i)=>\`<span>\${NM[i]} \${EM[stat(BASE[i]*1.35)]}→\${EM[stat(v*1.35)]}</span>\`).join("")}</div><p><b>🌊 \${Mt.amb} · 🤝 \${Mt.soc} · 💰 \${Mt.eco}</b></p><button class="btn" id="nx">\${round<2?"Ajustar y simular de nuevo (+🪙 40)":"Ir al quiz final"}</button>\`);
+$("#nx").onclick=()=>{if(round<2){coins+=40;phase="build";sh.hidden=true;$("#panel").hidden=false;$("#hint").textContent="Ajusta tus medidas y busca más consenso.";$("#go").textContent="📅 Simular 30 días (2/2)";hud()}else quiz()}}
+const sh=$("#sheet"),cd=$("#card");
+function show(h){cd.innerHTML=h;sh.hidden=false;cd.scrollTop=0}
+function learn(){const c=CARDS[ci],last=ci===CARDS.length-1;
+show(\`<div class="em">\${c.e}</div><h2>\${c.t}</h2><p>\${c.b}</p>\${c.s?\`<small>📖 \${c.s}</small>\`:""}<div class="dots">\${CARDS.map((_,k)=>\`<u class="\${k===ci?"on":""}"></u>\`).join("")}</div><button class="btn" id="nx">\${last?"¡A jugar!":"Siguiente"}</button>\`);
+$("#nx").onclick=()=>{if(last)startBuild();else{ci++;learn()}}}
+function startBuild(){phase="build";sh.hidden=true;$("#hud").hidden=false;$("#panel").hidden=false;$("#hint").textContent="① Toca una medida (parpadea). ② Arrástrala a un municipio que brille. ③ Simula 30 días.";$("#tools").classList.add("blink");tool=null;$("#go").textContent="📅 Simular 30 días (1/2)";hud()}
+$("#go").onclick=startEpisode;
+function quiz(){const q=Q[qi];ans=false;$("#hud").hidden=true;lb.forEach(e=>e.hidden=true);
+show(\`<small>Pregunta \${qi+1} de \${Q.length}</small><h2>\${q.q}</h2>\`+q.o.map((o,k)=>\`<button class="op" data-k="\${k}">\${o}</button>\`).join("")+\`<div id="fb"></div>\`);
+cd.querySelectorAll(".op").forEach(b=>b.onclick=()=>{if(ans)return;ans=true;const k=+b.dataset.k,okk=k===q.a;if(okk)qok++;
+cd.querySelectorAll(".op").forEach((x,j)=>{if(j===q.a)x.classList.add("ok");else if(j===k)x.classList.add("bad")});
+$("#fb").innerHTML=\`<p><b>\${okk?"✅ ¡Correcto!":"❌ No exactamente."}</b> \${q.e}</p><small>📖 \${q.s}</small><button class="btn" id="nx">\${qi<Q.length-1?"Siguiente":"Ver mi resultado"}</button>\`;
+$("#nx").onclick=()=>{qi++;if(qi<Q.length)quiz();else end()}})}
+function end(){const pbr=Math.round((Mt.amb+Mt.soc+Mt.eco)/3*.4)+15*qok;
+if(window.parent && window.parent.postMessage){
+    window.parent.postMessage({ juegoId: 'aburra', pbr: pbr, amb: Mt.amb, soc: Mt.soc, eco: Mt.eco, quiz: qok }, '*');
+}
+const nm={mov:"Movilidad",pro:"Producción limpia",cul:"Cultura ciudadana",ord:"Ordenamiento",ala:"SIATA"},dec=Object.keys(nm).map(k=>{const n=slots.filter(x=>x===k).length;return n?\`\${nm[k]} ×\${n}\`:""}).filter(Boolean).join(", ")||"ninguna medida";
+const msg=pbr>=80?"Valle articulado: lograste aire más limpio gobernando en conjunto.":pbr>=50?"Buen avance. Piensa en qué municipios y medidas darían más consenso y menos humo.":"El valle sigue sin respirar bien. Prueba otra combinación y suma más municipios.";
+show(\`<div class="em">🏆</div><h2>\${pbr} de 100 PBR</h2><p>\${msg}</p><p>Tus decisiones: \${dec}.</p><div class="code">ABURRÁ | PBR \${pbr}/100 | Amb \${Mt.amb} Soc \${Mt.soc} Eco \${Mt.eco} | Quiz \${qok}/\${Q.length} | Municipios \${slots.filter(Boolean).length}/10</div><small>¡Excelente! Tu progreso se ha enviado al Menú Principal.</small><button class="btn" id="nx">Jugar de nuevo</button>\`);
+$("#nx").onclick=()=>location.reload()}
+learn();
+<\/script></body></html>`
+            },
+            amazonia: {
+                id: 'amazonia',
+                title: 'Nivel Amazonia',
+                subtitle: 'Habitar la selva · Florencia/Leticia',
+                emoji: '🐬',
+                location: 'Región Amazónica',
+                desc: 'Planifica ciudades sostenibles integrando viviendas aptas, energías limpias y adaptación fluvial.',
+                code: `<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Habitar la selva · Nivel Amazonia</title>
+<style>
+:root{--bg:#e6f2f1;--card:#fff;--ink:#0b2a33;--mut:#4a6670;--acc:#0b7285;--onacc:#fff;--line:#bcd7d9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}}
+:root[data-theme="dark"]{--bg:#08242b;--card:#0e3540;--ink:#e6f4f4;--mut:#9fc0c4;--acc:#5ee0ea;--onacc:#04252b;--line:#24505a}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 ui-rounded,"Avenir Next","Trebuchet MS",system-ui,sans-serif;overflow:hidden;touch-action:manipulation}
+[hidden]{display:none!important}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;z-index:2;display:flex;gap:8px;align-items:center;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 14px;background:linear-gradient(var(--bg) 40%,transparent)}
+.m{flex:1;font-size:11px;font-weight:700}
+.m i{display:block;height:8px;border-radius:4px;background:var(--line);margin-top:3px;overflow:hidden}
+.m b{display:block;height:100%;width:0;transition:width .6s}
+#coins{font-weight:800;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px 9px;white-space:nowrap}
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+#hint{font-size:13px;color:var(--mut);min-height:38px}
+#tools{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:8px 0 10px}
+.t{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:6px 0;font:600 10px/1.2 inherit;font-family:inherit}
+.t span{display:block;font-size:20px}
+.t.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.t{touch-action:none;user-select:none;-webkit-user-select:none}
+#tools.blink .t{animation:bl 1.1s ease-in-out infinite}
+@keyframes bl{50%{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc)}}
+#ghost{position:fixed;z-index:7;font-size:40px;line-height:1;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+@media(prefers-reduced-motion:reduce){#tools.blink .t{animation:none;border-color:var(--acc)}}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;margin-top:12px;font:700 16px inherit;font-family:inherit;background:var(--acc);color:var(--onacc)}
+#panel .btn{margin-top:0}
+#sheet{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,20,25,.5)}
+#card{width:100%;max-width:520px;max-height:90%;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+#card h2{margin:4px 0 8px;font-size:21px;line-height:1.2}
+#card p{margin:8px 0;font-size:16px}
+#card small{color:var(--mut);display:block;margin-top:6px}
+.em{font-size:44px;line-height:1}
+.dots{display:flex;gap:6px;margin-top:14px}
+.dots u{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots u.on{background:var(--acc);width:22px;border-radius:4px}
+.op{display:block;width:100%;text-align:left;margin-top:8px;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:15px/1.35 inherit;font-family:inherit}
+.op.ok{border-color:#16a34a;background:rgba(22,163,74,.18)}
+.op.bad{border-color:#dc2626;background:rgba(220,38,38,.16)}
+.code{margin-top:10px;padding:10px;border-radius:10px;background:var(--bg);border:1px dashed var(--acc);font:13px/1.4 ui-monospace,monospace;user-select:all;word-break:break-word}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:6;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;text-align:center}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud" hidden>
+<div class="m">🌊 Ambiente<i><b id="ba" style="background:#0ea5e9"></b></i></div>
+<div class="m">🤝 Sociedad<i><b id="bs" style="background:#f59e0b"></b></i></div>
+<div class="m">💰 Economía<i><b id="be" style="background:#16a34a"></b></i></div>
+<div id="coins">🪙 100</div></div>
+<div id="panel" hidden><div id="hint"></div><div id="tools"></div><button class="btn" id="go"></button></div>
+<div id="ghost" hidden></div>
+<div id="toast"></div>
+<div id="sheet"><div id="card"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<script>
+const $=s=>document.querySelector(s);
+const CARDS=[
+{e:"🐬",t:"Hola, soy Boto",b:"Soy un delfín rosado del río Amazonas. Tu consorcio fue elegido para ayudar a crecer a una ciudad amazónica sin perder la selva. Te cuento qué dice el libro guía.",s:""},
+{e:"🌳",t:"Pocas ciudades, mucha selva",b:"En la Amazonia colombiana hay unos diez centros urbanos: seis capitales departamentales (Florencia, San José del Guaviare, Mocoa, Leticia, Mitú e Inírida) y cabeceras como Puerto Asís, Villagarzón, Orito y San Vicente del Caguán, que se vuelven cada vez más urbanas.",s:"Libro guía, p. 21"},
+{e:"🧭",t:"No hay un modelo único",b:"El Instituto Sinchi dice que no hay ciudades amazónicas ni un modelo de ciudad para la Amazonia: hay ciudades en la Amazonia. Cada una debe ser tan diversa y única como su entorno y su gente. El reto es construirlas considerando su historia, su cultura, su entorno natural y su gente (la “urbano-diversidad”).",s:"Libro guía, pp. 21 y 23"},
+{e:"🏚️",t:"Los problemas",b:"Los principales problemas ambientales urbanos son: viviendas y saneamiento básico inadecuados, ubicación en zonas de riesgo, contaminación del aire, el agua y el suelo, y falta de planificación. Proliferan los asentamientos precarios y los lotes irregulares o clandestinos, y la vivienda no está al alcance de la gente de bajos ingresos. Además, muchos residentes llegan sin saber si podrán quedarse a largo plazo.",s:"Libro guía, p. 21"},
+{e:"🚶",t:"Ciudades a escala humana",b:"Los centros urbanos crecen de forma desordenada, sin criterios de planificación coherentes con el medio natural y sin que la gente participe. El libro pide “humanizar” las ciudades: dejar de pensarlas para los automóviles, como plantea Jan Gehl en “Ciudades para la gente”, y dar espacio para compartir con los vecinos. Una ciudad sostenible ofrece calidad de vida, reduce su impacto sobre la naturaleza y cuenta con participación ciudadana activa.",s:"Libro guía, p. 22"},
+{e:"🛠️",t:"¿Qué se propone?",b:"El libro señala que las políticas públicas aún no incorporan la urbanización de la Amazonia. El Sinchi propone planes en distintos niveles del territorio, pedagogía y espacios de diálogo-reflexión-acción con los habitantes. Un ejemplo concreto: su sede en Leticia recoge agua lluvia con cubiertas adaptadas al clima amazónico y usa paneles solares por los frecuentes cortes de energía.",s:"Libro guía, pp. 22-23 y 129"},
+{e:"🎯",t:"Tu misión",b:"Llegarán familias en dos oleadas: 3 y luego 6 en total. Tienes 100 monedas y 9 lotes: ⚪ 5 aptos, 🟠 2 inundables (el río crece) y 🟢 2 en selva (se talan árboles). Cada vivienda aloja 2 familias y en lotes riesgosos cuesta menos. Si no alcanzan las viviendas, algunas familias invaden lotes libres. Arrastra las medidas a los lotes y mira qué pasa.",s:""}];
+const TOOLS=[
+["viv","🏠","Vivienda",20,"Vivienda para 2 familias. En lote apto cuesta 20; en zona inundable o en selva cuesta 10, pero ahí hay riesgo o se talan árboles."],
+["san","🚰","Saneam.",25,"Alcantarillado y tratamiento de aguas para 4 familias. Sin esto, las aguas negras llegan al río."],
+["llu","🌧️","Agua+sol",20,"Modelo de la sede del Sinchi en Leticia: cubierta que recoge agua lluvia y paneles solares. Da bienestar y ahorra."],
+["pub","🚶","Público",15,"Calles y plazas caminables: ciudad a escala humana, no solo para autos."],
+["dia","🗣️","Mesa",15,"Mesa de diálogo con los habitantes: orienta a las familias recién llegadas y evita 2 invasiones."],
+["del","🗑️","Quitar",0,"Toca un lote ocupado para retirar la medida y recuperar sus monedas."]];
+const Q=[
+{q:"Según el Instituto Sinchi, ¿cuáles son los principales problemas ambientales urbanos en la Amazonia?",o:["Exceso de industrias pesadas y de grandes centros comerciales","Falta de turismo internacional y de hoteles de lujo","Vivienda y saneamiento inadecuados, ubicación en zonas de riesgo, contaminación y falta de planificación","Escasez de suelo por la alta densidad de rascacielos"],a:2,e:"El capítulo enumera viviendas y saneamiento básico inadecuados, localización en zonas de riesgo, contaminación de aire, agua y suelo, y ausencia de ciudades planificadas.",s:"Libro guía, p. 21"},
+{q:"¿Qué quiere decir que “no hay ciudades amazónicas ni modelos de ciudad para la Amazonia”?",o:["Que cada ciudad debe ser diversa y única, según su entorno natural y su gente","Que la Amazonia no puede tener ciudades","Que todas deben construirse con el mismo diseño para ahorrar costos","Que deben copiar el modelo de las capitales andinas"],a:0,e:"No existe un modelo único: hay ciudades en la Amazonia y cada una debe responder a su historia, su cultura, su entorno natural y sus ciudadanos.",s:"Libro guía, pp. 21 y 23"},
+{q:"¿Qué critica el libro de las ciudades pensadas para los automóviles y qué propone?",o:["Que limitan las relaciones entre vecinos; propone ampliar las vías para descongestionar","Que son lentas de construir; propone prohibir la vivienda cerca del río","Que usan demasiado suelo agrícola; propone concentrar a todos en una sola torre","Que dejan pocos espacios para compartir con los vecinos; propone humanizar la ciudad y recuperar la escala humana"],a:3,e:"Citando a Jan Gehl, el capítulo plantea que las ciudades pensadas para autos limitan las relaciones humanas y que hay que recuperar la dimensión humana y la vida en el espacio público.",s:"Libro guía, p. 22"},
+{q:"¿Qué ejemplo de adaptación al clima amazónico menciona el libro en Leticia?",o:["Una represa que abastece de agua a toda la ciudad","La sede del Instituto Sinchi, con cubiertas que recogen agua lluvia y paneles solares","Una planta térmica de carbón para evitar los cortes de energía","Un relleno sanitario construido en la ronda del río"],a:1,e:"La sede del Sinchi en Leticia recolecta agua lluvia con cubiertas adaptadas al clima amazónico y usa paneles solares para enfrentar los frecuentes cortes de energía.",s:"Libro guía, p. 129"}];
+const PL=[{x:-3.5,z:-3,t:"A"},{x:3.5,z:-3,t:"A"},{x:0,z:0,t:"A"},{x:-3.5,z:3,t:"A"},{x:3.5,z:3,t:"A"},{x:-3,z:7.4,t:"R"},{x:3,z:7.4,t:"R"},{x:-5.6,z:-8,t:"F"},{x:5.6,z:-8,t:"F"}];
+const BC=PL.map(p=>({A:0xffffff,R:0xfb923c,F:0x4ade80}[p.t]));
+const cost=k=>TOOLS.find(x=>x[0]===k)[3],costFor=(k,i)=>k==="viv"&&PL[i].t!=="A"?10:cost(k);
+let coins=100,tool=null,slots=Array(9).fill(null),paid=Array(9).fill(0),round=0,phase="learn",ci=0,qi=0,qok=0,ans=false,dil="",Mt={amb:0,soc:0,eco:0},plan=null,sq={},sqG={},t0=0,t1=0,tmax=0,fl1=0,pv=0,hov=-1;
+const cv=$("#c"),R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new THREE.Scene();S.background=new THREE.Color(0xbfe3f0);
+const cam=new THREE.PerspectiveCamera(48,1,.1,140);
+function fit(){const W=innerWidth,H=innerHeight;R.setSize(W,H,false);cam.aspect=W/H;const p=W<H;cam.position.set(0,p?30:36,p?20:26);cam.lookAt(0,0,p?1:2);
+const top=64,bot=Math.min(250,H*.34),yc=top+(H-top-bot)/2;cam.setViewOffset(W,H,0,Math.round(H/2-yc),W,H);cam.updateProjectionMatrix()}
+addEventListener("resize",fit);fit();
+S.add(new THREE.HemisphereLight(0xffffff,0x4b6b3a,.95));const dl=new THREE.DirectionalLight(0xffffff,.5);dl.position.set(6,12,5);S.add(dl);
+const M=c=>new THREE.MeshLambertMaterial({color:c});
+const add=(g,c,x,y,z,rx)=>{const m=new THREE.Mesh(g,M(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;S.add(m);return m};
+add(new THREE.PlaneGeometry(60,60),0x3f7d3a,0,0,0,-Math.PI/2);
+add(new THREE.PlaneGeometry(13,10.4),0xa6cf86,0,.01,0,-Math.PI/2);
+add(new THREE.PlaneGeometry(22,3.8),0xc9a56b,0,.012,7.3,-Math.PI/2);
+add(new THREE.PlaneGeometry(60,6.4),0x8a7d52,0,.02,12.4,-Math.PI/2);
+add(new THREE.BoxGeometry(2.4,.3,1.4),0x7c5a3a,0,.15,9.6);
+[[-6,11.2],[5.5,13.2]].forEach(([x,z])=>add(new THREE.BoxGeometry(1.8,.22,.5),0x92400e,x,.18,z));
+let sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+const D=new THREE.Object3D(),col=new THREE.Color();
+function inst(geo,n,f){const m=new THREE.InstancedMesh(geo,M(0xffffff),n);m.frustumCulled=false;for(let i=0;i<n;i++){D.position.set(0,0,0);D.rotation.set(0,0,0);D.scale.set(1,1,1);const c=f(i,D);D.updateMatrix();m.setMatrixAt(i,D.matrix);m.setColorAt(i,col.setHex(c))}S.add(m);return m}
+const fr=(x,z,d)=>PL.every(p=>Math.hypot(p.x-x,p.z-z)>d);
+const HC=[0xf8d6a5,0xe9a9a1,0xa7d3e8,0xf3e79b,0xc7b5e6,0xbfe0b4],RC=[0xc2410c,0x9a3412,0x0e7490,0x7c2d12];
+const H=[];for(let t=0;t<900&&H.length<15;t++){const x=-6+rnd()*12,z=-4.8+rnd()*9.4;if(fr(x,z,2.4)&&H.every(h=>Math.hypot(h.x-x,h.z-z)>1.6))H.push({x,z,h:.7+rnd()*.4,c:HC[H.length%6]})}
+inst(new THREE.BoxGeometry(1,1,1),H.length,(i,d)=>{const h=H[i];d.position.set(h.x,h.h/2,h.z);d.scale.set(.95,h.h,.95);return h.c});
+inst(new THREE.ConeGeometry(.75,.5,4),H.length,(i,d)=>{const h=H[i];d.position.set(h.x,h.h+.25,h.z);d.rotation.y=Math.PI/4;return RC[i%4]});
+const SK=[];for(let t=0;t<900&&SK.length<6;t++){const x=-8+rnd()*16,z=6+rnd()*2.6;if(fr(x,z,2.2)&&SK.every(h=>Math.hypot(h.x-x,h.z-z)>1.5))SK.push({x,z})}
+inst(new THREE.BoxGeometry(1,1,1),SK.length,(i,d)=>{d.position.set(SK[i].x,.55,SK[i].z);d.scale.set(.8,.45,.8);return 0xa8a29e});
+const T=[];for(let t=0;t<3000&&T.length<130;t++){const x=-9.5+rnd()*19,z=-13.5+rnd()*18.5;if(!(Math.abs(x)<6.8&&z>-5.4)&&z<5.2&&T.every(q=>Math.hypot(q.x-x,q.z-z)>.85))T.push({x,z,s:.9+rnd()*.7})}
+const tr=inst(new THREE.CylinderGeometry(.1,.14,.6,5),T.length,()=>0x6b4a2b),cr=inst(new THREE.IcosahedronGeometry(.6,0),T.length,(i)=>[0x1f7a34,0x2b8a3e,0x166534,0x2f9e44][i%4]);
+function tree(){T.forEach((q,i)=>{q.dead=PL.some((p,j)=>p.t==="F"&&(slots[j]||sq[j])&&Math.hypot(p.x-q.x,p.z-q.z)<2.6);const s=q.dead?.001:q.s;D.rotation.set(0,0,0);D.scale.setScalar(s);D.position.set(q.x,.3*s,q.z);D.updateMatrix();tr.setMatrixAt(i,D.matrix);D.position.set(q.x,.95*s,q.z);D.updateMatrix();cr.setMatrixAt(i,D.matrix)});tr.instanceMatrix.needsUpdate=cr.instanceMatrix.needsUpdate=true}
+const P=[];for(let t=0;t<2000&&P.length<26;t++){const x=-6+rnd()*12,z=-4.8+rnd()*13;if(fr(x,z,2.3)&&H.every(h=>Math.hypot(h.x-x,h.z-z)>1.1))P.push({x,z,a:rnd()*6.28,r:.4+rnd()*.7,v:.6+rnd()*.8,ph:rnd()*6.28,c:[0xe11d48,0x2563eb,0xf59e0b,0x7c3aed,0x059669,0xf97316][P.length%6]})}
+const pb=inst(new THREE.CylinderGeometry(.1,.13,.42,6),P.length,(i,d)=>{d.position.set(P[i].x,.38,P[i].z);return P[i].c}),ph=inst(new THREE.SphereGeometry(.12,6,5),P.length,(i,d)=>{d.position.set(P[i].x,.97,P[i].z);return 0xf2c9a0});
+function walk(t){P.forEach((p,i)=>{const s=Math.sin(t*p.v+p.ph),b=Math.abs(Math.sin(t*6*p.v+i))*.05;D.rotation.set(0,0,0);D.scale.setScalar(1.8);D.position.set(p.x+Math.cos(p.a)*p.r*s,.38+b,p.z+Math.sin(p.a)*p.r*s);D.updateMatrix();pb.setMatrixAt(i,D.matrix);D.position.y=.97+b;D.updateMatrix();ph.setMatrixAt(i,D.matrix)});pb.instanceMatrix.needsUpdate=ph.instanceMatrix.needsUpdate=true}
+tree();
+const mk=PL.map((p,i)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.15,.12,28),new THREE.MeshBasicMaterial({color:BC[i],transparent:true,opacity:.75}));m.position.set(p.x,.12,p.z);S.add(m);return m});
+const bm=PL.map(p=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,4,12,1,true),new THREE.MeshBasicMaterial({color:0xfde047,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));m.position.set(p.x,2,p.z);S.add(m);return m});
+const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const ok=i=>!!tool&&phase==="build"&&(tool==="del"?!!slots[i]:!slots[i]);
+const G=[];
+function draw(i){if(G[i])S.remove(G[i]);G[i]=null;const t=slots[i];if(!t)return;
+const g=new THREE.Group(),p=PL[i];g.position.set(p.x,0,p.z);
+const b=(geo,c,x,y,z,rx)=>{const m=new THREE.Mesh(geo,M(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;g.add(m)};
+if(t==="viv"){b(new THREE.BoxGeometry(1.5,.9,1.2),0xf5d28a,0,.45,0);b(new THREE.ConeGeometry(1.15,.6,4),0xc2410c,0,1.2,0).rotation.y=0}
+if(t==="san"){b(new THREE.CylinderGeometry(.5,.5,.9,12),0x94a3b8,0,.45,0);b(new THREE.BoxGeometry(1.4,.15,.25),0x38bdf8,0,.12,.8)}
+if(t==="llu"){b(new THREE.BoxGeometry(1.2,.7,1),0xf3e79b,0,.35,0);b(new THREE.BoxGeometry(1.4,.08,.9),0x1e3a8a,0,.95,0,-.4);b(new THREE.CylinderGeometry(.3,.3,.7,10),0x38bdf8,1,.35,0)}
+if(t==="pub"){b(new THREE.CylinderGeometry(1,1,.08,18),0xe5e7eb,0,.06,0);b(new THREE.ConeGeometry(.35,.9,6),0x2f9e44,-.5,.55,.2);b(new THREE.BoxGeometry(.9,.15,.3),0x7c5a3a,.4,.25,-.3)}
+if(t==="dia"){b(new THREE.CylinderGeometry(.5,.5,.4,10),0xb45309,0,.2,0);b(new THREE.ConeGeometry(1.2,.8,8),0xca8a04,0,1.4,0);[[-.8,0],[.8,0],[0,.8]].forEach(([x,z])=>b(new THREE.CylinderGeometry(.06,.06,1,5),0x7c5a3a,x,.5,z))}
+S.add(g);G[i]=g}
+function shack(i){const p=PL[i],g=new THREE.Group();g.position.set(p.x,0,p.z);[[-.6,0],[.7,.3]].forEach(([x,z])=>{const a=new THREE.Mesh(new THREE.BoxGeometry(.9,.55,.9),M(0x9ca3af)),r=new THREE.Mesh(new THREE.BoxGeometry(1.1,.08,1.1),M(0x6b7280));a.position.set(x,.28,z);r.position.set(x,.6,z);g.add(a,r)});S.add(g);sqG[i]=g}
+const fw=new THREE.Mesh(new THREE.PlaneGeometry(22,3.8),new THREE.MeshBasicMaterial({color:0x7b6a45,transparent:true,opacity:.6}));fw.rotation.x=-Math.PI/2;fw.position.set(0,.3,7.3);fw.visible=false;S.add(fw);
+function fm(c){const g=new THREE.Group(),b=new THREE.Mesh(new THREE.CylinderGeometry(.1,.13,.42,6),M(c)),h=new THREE.Mesh(new THREE.SphereGeometry(.12,6,5),M(0xf2c9a0));b.position.y=.21;h.position.y=.54;g.add(b,h);g.scale.setScalar(2.2);return g}
+function clr(){if(plan)plan.fam.forEach(f=>f.m&&S.remove(f.m));Object.values(sqG).forEach(g=>S.remove(g));sqG={};sq={};fw.visible=false;G.forEach(g=>{if(g)g.visible=true});tree()}
+function loop(ts){requestAnimationFrame(loop);pv=ts;
+if(phase==="arrive"){const el=(ts-t0)/1000;
+plan.fam.forEach(f=>{const a=Math.min(1,Math.max(0,(el-f.d)*2.4/f.L));f.m.visible=el>=f.d;f.m.position.set(f.x0+(f.x1-f.x0)*a,Math.abs(Math.sin(el*9+f.d))*.08*(a<1?1:0),f.z0+(f.z1-f.z0)*a);
+if(a>=1&&!f.fx){f.fx=1;if(f.kind==="squat"&&!sqG[f.to]){sq[f.to]=1;shack(f.to);tree()}}});
+if(el>tmax){phase="flood";t1=ts;fl1=0;fw.visible=true;fw.scale.set(1,.2,1)}}
+else if(phase==="flood"){const e=(ts-t1)/1000;fw.scale.set(1,Math.min(1,.2+e*.35),1);
+if(e>1&&!fl1){fl1=1;PL.forEach((p,i)=>{if(p.t==="R"){if(G[i])G[i].visible=false;if(sqG[i])sqG[i].visible=false}});plan.fam.forEach(f=>{if(f.kind!=="wait"&&PL[f.to].t==="R")f.m.visible=false})}
+if(e>3.2)finishRound()}
+walk(ts/1000);const pu=RM?.8:.5+.5*Math.sin(ts/170);
+mk.forEach((m,i)=>{const v=ok(i);m.material.color.setHex(v?0xfde047:BC[i]);m.material.opacity=v?.5+.5*pu:slots[i]?.3:.75;m.scale.setScalar(i===hov&&v?1.3:1);bm[i].material.opacity=v?.15+.4*pu:0});
+R.render(S,cam)}
+requestAnimationFrame(loop);
+const pv3=new THREE.Vector3(),gh=$("#ghost");let d0=null,drag=null;
+function near(x,y){let b=-1,bd=1e9;PL.forEach((p,i)=>{pv3.set(p.x,0,p.z).project(cam);const d=Math.hypot((pv3.x+1)/2*innerWidth-x,(1-pv3.y)/2*innerHeight-y);if(d<bd){bd=d;b=i}});return bd<80?b:-1}
+function dragStart(e,k){drag=k;gh.textContent=TOOLS.find(x=>x[0]===k)[1];gh.hidden=false;dragMove(e)}
+function dragMove(e){const y=e.clientY-50;gh.style.left=e.clientX+"px";gh.style.top=y+"px";hov=near(e.clientX,y)}
+addEventListener("pointermove",e=>{if(drag)dragMove(e)});
+addEventListener("pointerup",e=>{if(!drag)return;const k=drag,y=e.clientY-50;drag=null;hov=-1;gh.hidden=true;if(y<$("#panel").getBoundingClientRect().top){const i=near(e.clientX,y);if(i>=0){tool=k;place(i)}else toast("Suéltala sobre un lote que brilla")}});
+addEventListener("pointercancel",()=>{drag=null;gh.hidden=true;hov=-1});
+cv.addEventListener("pointerdown",e=>{d0=[e.clientX,e.clientY]});
+cv.addEventListener("pointerup",e=>{const q=d0;d0=null;if(!q||Math.hypot(e.clientX-q[0],e.clientY-q[1])>10)return;const i=near(e.clientX,e.clientY);if(i>=0)place(i)});
+function toast(t){const e=$("#toast");e.textContent=t;e.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.opacity=0,1900)}
+function hud(){$("#coins").textContent="🪙 "+coins;$("#ba").style.width=Mt.amb+"%";$("#bs").style.width=Mt.soc+"%";$("#be").style.width=Mt.eco+"%"}
+TOOLS.forEach(([k,e,n,c])=>{const b=document.createElement("button");b.className="t";b.id="t_"+k;b.innerHTML=\`<span>\${e}</span>\${n}<br>\${c?"🪙 "+c:"gratis"}\`;b.onpointerdown=ev=>{pick(k);if(phase==="build"&&k!=="del")dragStart(ev,k)};$("#tools").append(b)});
+function pick(k){if(phase!=="build")return;$("#tools").classList.remove("blink");tool=k;$("#hint").textContent=TOOLS.find(x=>x[0]===k)[4]+(k==="del"?"":" Arrástrala a un lote que brille.");document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.id==="t_"+k))}
+function place(i){if(phase!=="build")return;if(!tool)return toast("Elige una medida abajo");
+if(tool==="del"){if(slots[i]){coins+=paid[i];slots[i]=null;paid[i]=0;draw(i);tree();hud()}return}
+if(slots[i])return toast("Ocupado: usa 🗑️ para quitarlo");
+const c=costFor(tool,i);if(coins<c)return toast("No alcanzan las monedas");
+coins-=c;paid[i]=c;slots[i]=tool;draw(i);tree();hud();
+if(PL[i].t==="R")toast("⚠️ Zona inundable: el río crece aquí");else if(PL[i].t==="F")toast("🌳 Es selva: se talarán árboles")}
+function sim(){const FT=round===1?3:6,V=[];slots.forEach((x,i)=>{if(x==="viv")V.push(i)});
+const fam=[],home=Math.min(FT,V.length*2);for(let k=0;k<home;k++)fam.push({to:V[k>>1],kind:"home"});
+const un=FT-home,dia=slots.filter((x,i)=>x==="dia"&&PL[i].t!=="R").length,free=PL.map((p,i)=>i).filter(i=>!slots[i]&&PL[i].t!=="A");
+const sqN=Math.min(Math.max(0,un-2*dia),free.length*2);
+for(let k=0;k<sqN;k++)fam.push({to:free[k>>1],kind:"squat"});
+for(let k=0;k<un-sqN;k++)fam.push({to:-1,kind:"wait"});
+const okc=k=>slots.filter((x,i)=>x===k&&PL[i].t!=="R").length,lost=slots.filter((x,i)=>x&&PL[i].t==="R").length;
+const onR=f=>f.to>=0&&PL[f.to].t==="R",flood=fam.filter(onR).length,hs=fam.filter(f=>f.kind==="home"&&!onR(f)).length,sqF=fam.filter(f=>f.kind==="squat").length,wait=fam.filter(f=>f.kind==="wait").length;
+const pol=Math.max(0,home+sqF-4*okc("san")),def=PL.filter((p,i)=>p.t==="F"&&(slots[i]||fam.some(f=>f.kind==="squat"&&f.to===i))).length;
+const cl=v=>Math.max(0,Math.min(100,Math.round(v)));
+const m={amb:cl(100-10*pol-22*def),soc:cl(25+9*hs+14*Math.min(1,okc("pub"))+10*Math.min(1,okc("llu"))+8*Math.min(1,dia)-12*flood-7*sqF-4*wait),eco:cl(35+coins/2+12*Math.min(1,okc("llu"))-10*lost)};
+return{fam,m,FT,home,sqF,wait,flood,pol,def}}
+function startRound(){if(phase!=="build")return;phase="arrive";round++;$("#panel").hidden=true;clr();plan=sim();
+plan.fam.forEach((f,k)=>{f.m=fm([0xe11d48,0x2563eb,0xf59e0b,0x7c3aed,0x059669,0xf97316][k%6]);f.m.visible=false;S.add(f.m);f.d=k*.9;f.x0=0;f.z0=9.6;
+if(f.to>=0){const p=PL[f.to];f.x1=p.x+(k%2?.7:-.7);f.z1=p.z+1.2}else{f.x1=-2.5+(k%5)*1.2;f.z1=9.5}
+f.L=Math.max(.01,Math.hypot(f.x1-f.x0,f.z1-f.z0))});
+tmax=Math.max(...plan.fam.map(f=>f.d+f.L/2.4))+1;t0=performance.now()}
+function finishRound(){phase="result";fw.visible=false;Mt=plan.m;hud();const p=plan;
+const t=[\`Llegaron \${p.FT} familias: \${p.home} en viviendas planificadas, \${p.sqF} invadieron lotes libres y \${p.wait} quedaron en lista de espera.\`];
+if(p.flood)t.push(\`🌊 La creciente del río afectó a \${p.flood} familias en zona inundable. El libro advierte sobre los asentamientos en zonas de riesgo (p. 21).\`);
+if(p.pol)t.push(\`🚰 \${p.pol} familias no tienen saneamiento: sus aguas negras llegan al río (p. 21).\`);
+if(p.def)t.push(\`🌳 Se talaron \${p.def} zonas de selva para construir: se pierde biodiversidad.\`);
+if(p.sqF)t.push("🏚️ Los lotes invadidos son asentamientos irregulares, uno de los problemas que describe el libro (p. 21).");
+if(!p.flood&&!p.pol&&!p.def&&!p.sqF&&!p.wait)t.push("✅ Todas las familias quedaron bien alojadas, sin riesgo y sin dañar la selva.");
+show(\`<h2>👨‍👩‍👧 Oleada \${round}/2</h2>\${t.map(x=>\`<p>\${x}</p>\`).join("")}<p><b>🌊 \${Mt.amb} · 🤝 \${Mt.soc} · 💰 \${Mt.eco}</b></p><button class="btn" id="nx">\${round<2?"Ajustar y recibir más familias (+🪙 40)":"Ir al dilema final"}</button>\`);
+$("#nx").onclick=()=>{if(round<2){clr();coins+=40;phase="build";sh.hidden=true;$("#panel").hidden=false;$("#hint").textContent="Ajusta tus medidas: ahora llegan 6 familias en total.";$("#go").textContent="👨‍👩‍👧 Recibir familias (2/2)";hud()}else dilema()}}
+const sh=$("#sheet"),cd=$("#card");
+function show(h){cd.innerHTML=h;sh.hidden=false;cd.scrollTop=0}
+function learn(){const c=CARDS[ci],last=ci===CARDS.length-1;
+show(\`<div class="em">\${c.e}</div><h2>\${c.t}</h2><p>\${c.b}</p>\${c.s?\`<small>📖 \${c.s}</small>\`:""}<div class="dots">\${CARDS.map((_,k)=>\`<u class="\${k===ci?"on":""}"></u>\`).join("")}</div><button class="btn" id="nx">\${last?"¡A jugar!":"Siguiente"}</button>\`);
+$("#nx").onclick=()=>{if(last)startBuild();else{ci++;learn()}}}
+function startBuild(){phase="build";sh.hidden=true;$("#hud").hidden=false;$("#panel").hidden=false;$("#hint").textContent="① Toca una medida (parpadea). ② Arrástrala a un lote que brille. ③ Recibe a las familias.";$("#tools").classList.add("blink");tool=null;$("#go").textContent="👨‍👩‍👧 Recibir familias (1/2)";hud()}
+$("#go").onclick=startRound;
+function dilema(){clr();$("#hud").hidden=true;
+show(\`<div class="em">⚖️</div><h2>Dilema final</h2><p>El municipio tiene $500 millones para un proyecto turístico en el río. ¿Qué eliges?</p><button class="op" data-d="A">🅰️ Un muelle de concreto masivo para cruceros.</button><button class="op" data-d="B">🅱️ Un saneamiento descentralizado con humedales artificiales y senderos palafíticos comunitarios.</button><div id="fb"></div>\`);
+cd.querySelectorAll(".op").forEach(b=>b.onclick=()=>{if(dil)return;dil=b.dataset.d;b.classList.add("ok");
+$("#fb").innerHTML=\`<p>\${dil==="A"?"Piensa: ¿un muelle masivo reduce los impactos sobre el medio natural?":"Piensa: ¿quién participa en decidir y operar estos senderos?"} Redacta tu elección en 3 renglones en la ficha, citando el principio de preservar la oferta ecosistémica. Pistas del libro: una ciudad sostenible reduce su impacto sobre la naturaleza y la gente participa (p. 22); hay que valorar la oferta del sistema natural amazónico (p. 23).</p><button class="btn" id="nx">Ir al quiz final</button>\`;$("#nx").onclick=quiz})}
+function quiz(){const q=Q[qi];ans=false;
+show(\`<small>Pregunta \${qi+1} de \${Q.length}</small><h2>\${q.q}</h2>\`+q.o.map((o,k)=>\`<button class="op" data-k="\${k}">\${o}</button>\`).join("")+\`<div id="fb"></div>\`);
+cd.querySelectorAll(".op").forEach(b=>b.onclick=()=>{if(ans)return;ans=true;const k=+b.dataset.k,okk=k===q.a;if(okk)qok++;
+cd.querySelectorAll(".op").forEach((x,j)=>{if(j===q.a)x.classList.add("ok");else if(j===k)x.classList.add("bad")});
+$("#fb").innerHTML=\`<p><b>\${okk?"✅ ¡Correcto!":"❌ No exactamente."}</b> \${q.e}</p><small>📖 \${q.s}</small><button class="btn" id="nx">\${qi<Q.length-1?"Siguiente":"Ver mi resultado"}</button>\`;
+$("#nx").onclick=()=>{qi++;if(qi<Q.length)quiz();else end()}})}
+function end(){const pbr=Math.round((Mt.amb+Mt.soc+Mt.eco)/3*.4)+15*qok;
+if(window.parent && window.parent.postMessage){
+    window.parent.postMessage({ juegoId: 'amazonia', pbr: pbr, amb: Mt.amb, soc: Mt.soc, eco: Mt.eco, quiz: qok }, '*');
+}
+const n=k=>slots.filter(x=>x===k).length,dec=[n("viv")&&\`Viviendas ×\${n("viv")}\`,n("san")&&\`Saneamiento ×\${n("san")}\`,n("llu")&&"Agua lluvia y solar",n("pub")&&"Espacio público",n("dia")&&"Mesa ciudadana"].filter(Boolean).join(", ")||"ninguna medida";
+const msg=pbr>=80?"Ciudad modelo: creciste cuidando la selva, el río y a la gente.":pbr>=50?"Buen avance. Revisa qué lotes y medidas podrían equilibrar mejor los tres medidores.":"La selva y el río necesitan más ayuda. Vuelve a intentarlo con otra distribución.";
+show(\`<div class="em">🏆</div><h2>\${pbr} de 100 PBR</h2><p>\${msg}</p><p>Tus decisiones: \${dec}.</p><div class="code">AMAZONIA | PBR \${pbr}/100 | Amb \${Mt.amb} Soc \${Mt.soc} Eco \${Mt.eco} | Quiz \${qok}/\${Q.length} | Dilema \${dil||"-"}</div><small>¡Excelente! Tu progreso se ha enviado al Menú Principal.</small><button class="btn" id="nx">Jugar de nuevo</button>\`);
+$("#nx").onclick=()=>location.reload()}
+learn();
+<\/script></body></html>`
+            }
+        };
+
+        // ESTADO GLOBAL DE LA PLATAFORMA
+        let appState = {
+            scores: { caribe: 0, gobernanza: 0, aburra: 0, amazonia: 0 },
+            details: { caribe: null, gobernanza: null, aburra: null, amazonia: null },
+            completed: { caribe: false, gobernanza: false, aburra: false, amazonia: false },
+            quizDone: false,
+            quizScore: 0,
+            studentName: '',
+            reflection: ''
+        };
+
+        // CARGA DE LOCALSTORAGE
+        function loadState() {
+            const saved = localStorage.getItem('ecosistemas_vivos_state');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Error al cargar localStorage", e);
+                }
+            }
+            updateUI();
+        }
+
+        function saveState() {
+            localStorage.setItem('ecosistemas_vivos_state', JSON.stringify(appState));
+            updateUI();
+        }
+
+        // ACTUALIZADOR DE INTERFAZ GENERAL
+        function updateUI() {
+            const completedKeys = Object.keys(appState.completed).filter(k => appState.completed[k]);
+            const completedCount = completedKeys.length;
+            const totalPbr = Object.values(appState.scores).reduce((a, b) => a + b, 0);
+
+            // Dashboard Header
+            document.getElementById('total-score').textContent = `${totalPbr} / 400`;
+            document.getElementById('progress-text').textContent = `${completedCount} de 4 Completados (${completedCount * 25}%)`;
+            document.getElementById('progress-percent').textContent = `${completedCount * 25}%`;
+            document.getElementById('progress-bar').style.width = `${completedCount * 25}%`;
+
+            // Renderizar Grid de Tarjetas de Juegos
+            renderGamesGrid();
+
+            // Estado del Banner del Quiz Final
+            const quizBanner = document.getElementById('quiz-banner');
+            const btnOpenQuiz = document.getElementById('btn-open-quiz');
+            const quizIconBg = document.getElementById('quiz-icon-bg');
+            const quizDesc = document.getElementById('quiz-status-desc');
+
+            if (completedCount === 4) {
+                quizBanner.classList.remove('border-cyan-700/50');
+                quizBanner.classList.add('border-emerald-500/80', 'bg-emerald-950/20');
+                quizIconBg.textContent = '🌟';
+                quizIconBg.classList.remove('bg-cyan-950/80', 'border-cyan-800');
+                quizIconBg.classList.add('bg-emerald-600', 'border-emerald-400', 'text-white');
+                quizDesc.textContent = '¡Felicidades! Has completado los 4 retos. Ya puedes realizar la evaluación de aprendizaje integrado.';
+                
+                btnOpenQuiz.disabled = false;
+                btnOpenQuiz.onclick = showQuizView;
+                btnOpenQuiz.className = "w-full md:w-auto px-8 py-4 rounded-xl font-extrabold text-base transition-all shadow-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white cursor-pointer hover:scale-105";
+                btnOpenQuiz.textContent = appState.quizDone ? 'Ver Certificado Emitido 📜' : 'Iniciar Evaluación Integrada ✨';
+            } else {
+                btnOpenQuiz.disabled = true;
+                btnOpenQuiz.className = "w-full md:w-auto px-8 py-4 rounded-xl font-bold text-base transition-all shadow-lg opacity-50 cursor-not-allowed bg-slate-700 text-slate-400";
+                btnOpenQuiz.textContent = "Evaluación Bloqueada (Faltan niveles)";
+            }
+        }
+
+        // RENDERIZADO DINÁMICO DE LAS TARJETAS DEL HUB
+        function renderGamesGrid() {
+            const grid = document.getElementById('games-grid');
+            grid.innerHTML = '';
+
+            Object.values(GAMES_DATA).forEach(game => {
+                const isDone = appState.completed[game.id];
+                const score = appState.scores[game.id] || 0;
+
+                const card = document.createElement('div');
+                card.className = `card-glass rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:border-cyan-400/60 hover:shadow-cyan-900/30 hover:shadow-xl relative overflow-hidden group ${isDone ? 'border-emerald-500/50' : ''}`;
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Header de Tarjeta -->
+                        <div class="flex items-start justify-between mb-4">
+                            <span class="text-4xl p-3 bg-cyan-950/80 rounded-2xl border border-cyan-800/80 group-hover:scale-110 transition-transform">${game.emoji}</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${isDone ? 'bg-emerald-950 text-emerald-400 border border-emerald-700' : 'bg-amber-950/80 text-amber-300 border border-amber-800/80'}">
+                                ${isDone ? 'Completado ✅' : 'Pendiente ⏳'}
+                            </span>
+                        </div>
+                        
+                        <!-- Título y Ubicación -->
+                        <h3 class="text-lg font-extrabold text-white group-hover:text-cyan-300 transition-colors">${game.title}</h3>
+                        <h4 class="text-xs font-bold text-cyan-400 mb-2">${game.subtitle}</h4>
+                        <p class="text-xs text-cyan-200/70 mb-4 leading-relaxed">${game.desc}</p>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-cyan-800/50">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-cyan-400 font-medium">Puntaje Alcanzado:</span>
+                            <span class="font-extrabold text-sm ${isDone ? 'text-amber-400' : 'text-slate-500'}">${isDone ? score + ' PBR' : '0 PBR'}</span>
+                        </div>
+                        <button onclick="launchGame('${game.id}')" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 ${isDone ? 'bg-cyan-800 hover:bg-cyan-700 text-white' : 'bg-cyan-600 hover:bg-cyan-500 text-white hover:shadow-cyan-700/50'}">
+                            <span>${isDone ? 'Rejugar Nivel 🔄' : 'Ingresar al Juego 🚀'}</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // GESTIÓN DE VISTAS (SPA)
+        function showHubView() {
+            document.getElementById('view-hub').classList.remove('hidden');
+            document.getElementById('view-game').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-certificate').classList.add('hidden');
+        }
+
+        function launchGame(gameId) {
+            const game = GAMES_DATA[gameId];
+            if (!game) return;
+
+            document.getElementById('active-game-emoji').textContent = game.emoji;
+            document.getElementById('active-game-title').textContent = `${game.title}: ${game.subtitle}`;
+            
+            const iframe = document.getElementById('game-iframe');
+            iframe.srcdoc = game.code;
+
+            document.getElementById('view-hub').classList.add('hidden');
+            document.getElementById('view-game').classList.remove('hidden');
+            document.getElementById('view-game').classList.add('flex');
+        }
+
+        function closeGameView() {
+            const iframe = document.getElementById('game-iframe');
+            iframe.srcdoc = ''; // Limpiar iframe
+            document.getElementById('view-game').classList.remove('flex');
+            document.getElementById('view-game').classList.add('hidden');
+            showHubView();
+        }
+
+        function showQuizView() {
+            if (appState.quizDone) {
+                showCertificateView();
+                return;
+            }
+            document.getElementById('view-hub').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+        }
+
+        function showCertificateView() {
+            document.getElementById('view-hub').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-certificate').classList.remove('hidden');
+            renderCertificate();
+        }
+
+        // ESCUCHA DE MENSAJES POSTMESSAGE DE LOS IFRAMES DE JUEGO
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            if (data && data.juegoId && GAMES_DATA[data.juegoId]) {
+                const jId = data.juegoId;
+                appState.completed[jId] = true;
+                appState.scores[jId] = data.pbr || 0;
+                appState.details[jId] = data;
+
+                saveState();
+                console.log(`[EcoSistemas Hub] Recibido resultado de ${jId}:`, data);
+            }
+        });
+
+        // ENVÍO DE QUIZ INTEGRADO FINAL
+        function handleQuizSubmit(e) {
+            e.preventDefault();
+            const q1Val = parseInt(document.querySelector('input[name="q1"]:checked').value);
+            const q2Val = parseInt(document.querySelector('input[name="q2"]:checked').value);
+            const studentName = document.getElementById('student-name').value;
+            const reflection = document.getElementById('reflection-text').value;
+
+            const quizScore = (q1Val * 10) + (q2Val * 10); // 20 puntos max
+
+            appState.quizDone = true;
+            appState.quizScore = quizScore;
+            appState.studentName = studentName;
+            appState.reflection = reflection;
+
+            saveState();
+            showCertificateView();
+        }
+
+        // RENDERIZAR CERTIFICADO Y MATRIZ RESUMEN
+        function renderCertificate() {
+            const totalPbr = Object.values(appState.scores).reduce((a, b) => a + b, 0);
+            const grandTotal = totalPbr + appState.quizScore;
+
+            document.getElementById('cert-student-name').textContent = appState.studentName || 'Estudiante';
+            document.getElementById('cert-total-pbr').textContent = `${grandTotal} / 420 PBR`;
+            document.getElementById('cert-quiz-score').textContent = `${appState.quizScore} / 20 pts (Quiz)`;
+            document.getElementById('cert-reflection').textContent = `"${appState.reflection || 'Sin reflexión ingresada.'}"`;
+
+            const now = new Date();
+            document.getElementById('cert-date').textContent = now.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('cert-code').textContent = `ECO-${Math.floor(100000 + Math.random() * 900000)}`;
+
+            const matrixContainer = document.getElementById('cert-matrix');
+            matrixContainer.innerHTML = '';
+
+            Object.values(GAMES_DATA).forEach(game => {
+                const det = appState.details[game.id] || {};
+                const score = appState.scores[game.id] || 0;
+                
+                const item = document.createElement('div');
+                item.className = "bg-cyan-950/90 p-3 rounded-xl border border-cyan-800 flex justify-between items-center";
+                item.innerHTML = `
+                    <div>
+                        <span class="font-bold text-white">${game.emoji} ${game.title}</span>
+                        <div class="text-[11px] text-cyan-300/80">
+                            ${det.amb ? `Amb: ${det.amb} | Soc: ${det.soc} | Eco: ${det.eco}` : 'Completado'}
+                        </div>
+                    </div>
+                    <span class="font-extrabold text-amber-400 text-sm">${score} PBR</span>
+                `;
+                matrixContainer.appendChild(item);
+            });
+        }
+
+        // REINICIAR PROGRESO COMPLETO
+        function resetAllProgress() {
+            if (confirm("¿Estás seguro de que deseas reiniciar todo el progreso y comenzar de nuevo?")) {
+                localStorage.removeItem('ecosistemas_vivos_state');
+                appState = {
+                    scores: { caribe: 0, gobernanza: 0, aburra: 0, amazonia: 0 },
+                    details: { caribe: null, gobernanza: null, aburra: null, amazonia: null },
+                    completed: { caribe: false, gobernanza: false, aburra: false, amazonia: false },
+                    quizDone: false,
+                    quizScore: 0,
+                    studentName: '',
+                    reflection: ''
+                };
+                updateUI();
+                showHubView();
+            }
+        }
+
+        // INICIALIZACIÓN
+        window.onload = function() {
+            loadState();
+        };
+    </script>
+</body>
+</html>
