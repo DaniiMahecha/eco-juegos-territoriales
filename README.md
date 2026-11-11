@@ -103,10 +103,10 @@ Ministerio de Ambiente y Desarrollo Sostenible. (2018). *Política nacional para
 ## 👤 Autoría y Contacto
 
 * **Autor:** Daniel Felipe Mahecha Peña
-* **LinkedIn:** [Perfil de LinkedIn - Daniel Felipe Mahecha Peña](https://www.linkedin.com)
+* **LinkedIn:** [Perfil de LinkedIn - Daniel Felipe Mahecha Peña](www.linkedin.com/in/daniel-felipe-mahecha-peña)
 
 ---
 
 ### 🚀 ¿Cómo acceder al juego?
 Solo ingresa al enlace publicado en Vercel desde cualquier navegador web (computador, tablet o teléfono celular):
-👉 **[Acceder a EcoSistemas Vivos](https://tu-proyecto.vercel.app)**
+👉 **[Acceder a EcoSistemas Vivos](https://tu-proyecto.vercel.app](https://eco-juegos-territoriales.vercel.app/))**
