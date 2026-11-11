@@ -87,9 +87,8 @@ Al enviar la evaluación, la plataforma genera automáticamente un **Certificado
 
 | Impacto Real del proyecto |
 | :---: |
-| ![Comunidad Impactada](<img width="1600" height="1200" alt="presentacion 2" src="https://github.com/user-attachments/assets/01cf9181-4e42-4ee9-9b81-e164575489cd" />
-
-) | ![Presentacion en Vivo](<img width="1200" height="1600" alt="presentacion" src="https://github.com/user-attachments/assets/1d8552c6-400e-4346-b589-c8cafb7367b1" />) |
+| ![Comunidad Impactada](<img width="1600" height="1200" alt="presentacion 2" src="https://github.com/user-attachments/assets/01cf9181-4e42-4ee9-9b81-e164575489cd" />) 
+![Presentacion en Vivo](<img width="1200" height="1600" alt="presentacion" src="https://github.com/user-attachments/assets/1d8552c6-400e-4346-b589-c8cafb7367b1" />) |
 
 ---
 
