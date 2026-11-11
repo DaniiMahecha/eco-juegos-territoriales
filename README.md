@@ -11,7 +11,12 @@ A través de cuatro retos territoriales basados en dinámicas reales del país, 
 Mira cómo funciona la plataforma y las mecánicas de juego en el siguiente video:
 
    <!-- Enlace directo al archivo crudo; el navegador lo reproduce -->
-   [▶️ Ver demo del juego](https://github.com/DaniiMahecha/eco-juegos-territoriales/raw/main/assests/demo.mp4)
+
+
+https://github.com/user-attachments/assets/77f2680c-6703-4ebf-b988-c8a8eb20f9bb
+
+
+
 
 > 💡 **Presentación en Vivo:** Este proyecto fue presentado en vivo como una propuesta de educación ambiental y gobernanza participativa aplicable a comunidades y entornos escolares.
 
