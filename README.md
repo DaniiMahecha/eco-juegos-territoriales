@@ -11,7 +11,10 @@ A través de cuatro retos territoriales basados en dinámicas reales del país, 
 Mira cómo funciona la plataforma y las mecánicas de juego en el siguiente video:
 
 <!-- Reemplaza el enlace a tu video o embed de YouTube/Drive -->
-![Demostración de la interfaz](./assets/demo.mp4)
+<video controls width="100%">
+  <source src="./assets/demo.mp4" type="video/mp4">
+  Tu navegador no soporta la reproducción de video.
+</video>
 
 > 💡 **Presentación en Vivo:** Este proyecto fue presentado en vivo como una propuesta de educación ambiental y gobernanza participativa aplicable a comunidades y entornos escolares.
 
