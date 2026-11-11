@@ -71,6 +71,9 @@ Una vez que completas los 4 retos territoriales, se desbloquea la **Evaluación 
 
 Al enviar la evaluación, la plataforma genera automáticamente un **Certificado de Excelencia Territorial** en pantalla.
 
+<img width="932" height="782" alt="certificado" src="https://github.com/user-attachments/assets/a7aa4b30-c47a-4f64-96c1-7703c4a1d705" />
+
+
 - Muestra tu **Nombre Completo**.
 - Consolida el **Puntaje Total PBR** obtenido a lo largo de los 4 niveles.
 - Incluye la **Matriz de Desempeño por Nivel** y tu **Reflexión Registrada**.
@@ -82,9 +85,11 @@ Al enviar la evaluación, la plataforma genera automáticamente un **Certificado
 
 > *La educación ambiental participativa permite transformar la indiferencia en acción comunitaria organizada.*
 
-| Talleres y Concertación | Gestión Territorial en Clase |
-| :---: | :---: |
-| ![Comunidad Impactada](https://via.placeholder.com/400x250?text=Foto+Comunidad+1) | ![Presentacion en Vivo](https://via.placeholder.com/400x250?text=Foto+Clase+o+Presentacion) |
+| Impacto Real del proyecto |
+| :---: |
+| ![Comunidad Impactada](<img width="1600" height="1200" alt="presentacion 2" src="https://github.com/user-attachments/assets/01cf9181-4e42-4ee9-9b81-e164575489cd" />
+
+) | ![Presentacion en Vivo](<img width="1200" height="1600" alt="presentacion" src="https://github.com/user-attachments/assets/1d8552c6-400e-4346-b589-c8cafb7367b1" />) |
 
 ---
 
