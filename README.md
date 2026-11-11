@@ -6,14 +6,6 @@ A través de cuatro retos territoriales basados en dinámicas reales del país, 
 
 ---
 
-## 📄 Documentación y Descarga del Informe
-
-Puedes consultar el informe ejecutivo marco sobre sostenibilidad y resiliencia urbana que fundamenta este proyecto pedagógico en el siguiente enlace:
-
-📄 [**Descargar Informe Ejecutivo (PDF)**](voces_ciudades_sostenibles_colombia.pdf)
-
----
-
 ## 📽️ Demostración en Video y Presentación en Vivo
 
 Mira cómo funciona la plataforma y las mecánicas de juego en el siguiente video:
