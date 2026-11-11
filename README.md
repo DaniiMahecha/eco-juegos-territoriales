@@ -12,7 +12,7 @@ Mira cómo funciona la plataforma y las mecánicas de juego en el siguiente vide
 
 <!-- Reemplaza el enlace a tu video o embed de YouTube/Drive -->
 <video controls width="100%">
-  <source src="./assets/demo.mp4" type="video/mp4">
+  <source src="./assests/demo.mp4" type="video/mp4">
   Tu navegador no soporta la reproducción de video.
 </video>
 
